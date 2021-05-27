@@ -1,0 +1,8 @@
+(sym_lib_table
+  (lib (name rover_workshop-rescue)(type Legacy)(uri C:/Users/willi/Documents/PCBs/Hybrid_Rover/rover_workshop-rescue.lib)(options "")(descr ""))
+  (lib (name Adafruit_I2C_FRAM-eagle-import)(type Legacy)(uri "C:/Users/willi/Downloads/Adafruit-FRAM-Breakout-PCB-master/Adafruit I2C FRAM/Adafruit_I2C_FRAM-eagle-import.lib")(options "")(descr ""))
+  (lib (name Rover_Workshop-cache)(type Legacy)(uri "C:/Users/willi/Documents/PCBs/Rover_Workshop/Rover Workshop-cache.lib")(options "")(descr ""))
+  (lib (name rover_workshop-cache)(type Legacy)(uri C:/Users/willi/Documents/PCBs/Rover_Workshop/rover_workshop-cache.lib)(options "")(descr ""))
+  (lib (name rover_workshop-rescue2)(type Legacy)(uri C:/Users/willi/Documents/PCBs/Rover_Workshop/rover_workshop-rescue.lib)(options "")(descr ""))
+  (lib (name workshop)(type Legacy)(uri C:/Users/willi/Documents/PCBs/Rover_Workshop/workshop.lib)(options "")(descr ""))
+)
