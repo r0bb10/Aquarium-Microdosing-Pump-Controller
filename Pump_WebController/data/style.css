@@ -1,0 +1,113 @@
+/***
+   Rui Santos
+   Complete project details at https://RandomNerdTutorials.com
+***/
+
+html {
+    font-family: Arial;
+    display: inline-block;
+    margin: 0px auto;
+    text-align: center;
+}
+
+* {
+    box-sizing: border-box
+}
+
+/* Set height of body and the document to 100% */
+body,
+html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial;
+}
+
+/* Style tab links */
+.tablink {
+    background-color: #555;
+    color: white;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    font-size: 17px;
+    width: 20%;
+}
+
+.tablink:hover {
+    background-color: #777;
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+    color: white;
+    display: none;
+    padding: 100px 20px;
+    height: 100%;
+}
+
+#Status {
+    background-color: #9cbac9;
+}
+
+#Programs {
+    background-color: #9cbac9;
+}
+
+#Calibration {
+    background-color: #9cbac9;
+}
+
+#ManualControl {
+    background-color: #9cbac9;
+}
+
+#Settings {
+    background-color: #9cbac9;
+}
+
+h1 {
+    color: #0F3376;
+    padding: 2vh;
+}
+
+h3 {
+    color: white;
+    font-size: 1.5rem;
+    padding: 2vh;
+}
+
+p {
+    font-size: 1.5rem;
+}
+
+.button {
+    padding: 10px 20px;
+    font-size: 24px;
+    text-align: center;
+    outline: none;
+    color: #fff;
+    background-color: #2f4468;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 6px #999;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.button:hover {
+    background-color: #1f2e45
+}
+
+.button:active {
+    background-color: #1f2e45;
+    box-shadow: 0 4px #666;
+    transform: translateY(2px);
+}

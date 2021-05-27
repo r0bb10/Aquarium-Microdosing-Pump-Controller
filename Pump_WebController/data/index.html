@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Aquarium Dosing Pump Control Center</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+    <h1>Aquarium Dosing Pump Control Center</h1>
+    <button class="tablink" onclick="openPage('Status', this)" id="defaultOpen">Status</button>
+    <button class="tablink" onclick="openPage('Programs', this)">Programs</button>
+    <button class="tablink" onclick="openPage('Calibration', this)">Calibration</button>
+    <button class="tablink" onclick="openPage('ManualControl', this)">Manual Mode</button>
+    <button class="tablink" onclick="openPage('Settings', this)" id="SettingsOpen">Settings</button>
+    <div id="Status" class="tabcontent">
+        <h3>Status</h3>
+        <p> Current Date/Time: </p>
+       <p id="currentDatetime"> Current Time</p> <br>
+
+
+       <p> Pump 1 Program: %pump1ProgStatus%  </p>
+       <p id="pump1nextDatetime"> Pump 1 next active: %pump1ProgTime% </p>
+        <p> Pump 1 Dispensing Amount: %pump1DispensingAmount% mL </p>
+       <p> Pump 1 Reservoir Volume: %pump1ContainerVolume% mL </p>
+
+
+    </div>
+    <div id="Programs" class="tabcontent">
+        <h3>Programs</h3>
+        <script src="/javascript.js"></script>
+   
+        Pump 1 Program: %pump1ProgStatus%  <br>
+        <form action="/getProgram" target="hiddenFrame">
+                     Enable Program <br>
+            <input type="radio" id="Yes" name="pump1ProgStatus" value="1">
+            <label for="Yes">YES</label><br>
+            <input type="radio" id="No" name="pump1ProgStatus" value="0">
+            <label for="No">NO</label><br>
+            Pump 1 Start Date and Time: <input type="datetime-local" name="pump1DateTime" multiple><br>
+            Pump 1 Dispensing Amount (mL) (current value %pump1DispensingAmount% mL): <input type="number " name="pump1DispensingAmount" multiple><br>
+            Pump 1 Schedule (Days) (Program runs every %pump1day% day): <input type="number " name="pump1day" multiple><br>
+            <input type="submit" value="Submit" onclick="submitProgramMessage()">
+        </form><br>
+    </div>
+    <div id="ManualControl" class="tabcontent">
+        <h3>Manual Control</h3>
+        <script src="/javascript.js"></script>
+        <button class="button" onmousedown="toggleCheckbox('on1');" ontouchstart="toggleCheckbox('on1');" onmouseup="toggleCheckbox('off1');" ontouchend="toggleCheckbox('off1');">RUN PUMP 1</button>
+    </div>
+    <div id="Calibration" class="tabcontent">
+        <h3>Calibration</h3>
+        <span class="sensor-labels">Pump 1 Calibration (%calibrationVolume% mL):</span>
+        <span id="pump1runtime">%STATE%</span>
+        <span> Seconds </span>
+        </p>
+        <p>
+            <script src="/javascript.js"></script>
+            <button class="button" onmousedown="toggleCheckbox('cal1on');" ontouchstart="toggleCheckbox('cal1on');" onmouseup="toggleCheckbox('cal1off');" ontouchend="toggleCheckbox('cal1off');">RUN PUMP 1</button>
+            <button class="button" onmouseup="toggleCheckbox('save1');" ontouchend="toggleCheckbox('save1');">SAVE PUMP 1 CALIBRATION</button>
+    </div>
+    <div id="Settings" class="tabcontent">
+        <h3>Settings</h3>
+        <form action="/getSetting" target="hiddenFrame">
+            Current Time Zone Offset (GMT%timezoneOffset%):
+            <select name="timezoneOffset" id="timezoneOffset-offset" class="span5" multiple>
+                <option value="-12.00">(GMT -12:00) Eniwetok, Kwajalein</option>
+                <option value="-11.00">(GMT -11:00) Midway Island, Samoa</option>
+                <option value="-10.00">(GMT -10:00) Hawaii</option>
+                <option value="-09.50">(GMT -9:30) Taiohae</option>
+                <option value="-09.00">(GMT -9:00) Alaska</option>
+                <option value="-08.00">(GMT -8:00) Pacific Time (US &amp; Canada)</option>
+                <option value="-07.00">(GMT -7:00) Mountain Time (US &amp; Canada)</option>
+                <option value="-06.00">(GMT -6:00) Central Time (US &amp; Canada), Mexico City</option>
+                <option value="-05.00" selected="selected">(GMT -5:00) Eastern Time (US &amp; Canada), Bogota, Lima</option>
+                <option value="-04.50">(GMT -4:30) Caracas</option>
+                <option value="-04.00">(GMT -4:00) Atlantic Time (Canada), Caracas, La Paz</option>
+                <option value="-03.50">(GMT -3:30) Newfoundland</option>
+                <option value="-03.00">(GMT -3:00) Brazil, Buenos Aires, Georgetown</option>
+                <option value="-02.00">(GMT -2:00) Mid-Atlantic</option>
+                <option value="-01.00">(GMT -1:00) Azores, Cape Verde Islands</option>
+                <option value="00.00">(GMT) Western Europe Time, London, Lisbon, Casablanca</option>
+                <option value="01.00">(GMT +1:00) Brussels, Copenhagen, Madrid, Paris</option>
+                <option value="02.00">(GMT +2:00) Kaliningrad, South Africa</option>
+                <option value="03.00">(GMT +3:00) Baghdad, Riyadh, Moscow, St. Petersburg</option>
+                <option value="03.00">(GMT +3:30) Tehran</option>
+                <option value="04.00">(GMT +4:00) Abu Dhabi, Muscat, Baku, Tbilisi</option>
+                <option value="04.5">(GMT +4:30) Kabul</option>
+                <option value="05.00">(GMT +5:00) Ekaterinburg, Islamabad, Karachi, Tashkent</option>
+                <option value="05.5">(GMT +5:30) Bombay, Calcutta, Madras, New Delhi</option>
+                <option value="05.75">(GMT +5:45) Kathmandu, Pokhara</option>
+                <option value="06.00">(GMT +6:00) Almaty, Dhaka, Colombo</option>
+                <option value="06.50">(GMT +6:30) Yangon, Mandalay</option>
+                <option value="07.00">(GMT +7:00) Bangkok, Hanoi, Jakarta</option>
+                <option value="08.00">(GMT +8:00) Beijing, Perth, Singapore, Hong Kong</option>
+                <option value="08.75">(GMT +8:45) Eucla</option>
+                <option value="09.00">(GMT +9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk</option>
+                <option value="09.50">(GMT +9:30) Adelaide, Darwin</option>
+                <option value="10.00">(GMT +10:00) Eastern Australia, Guam, Vladivostok</option>
+                <option value="10.50">(GMT +10:30) Lord Howe Island</option>
+                <option value="11.00">(GMT +11:00) Magadan, Solomon Islands, New Caledonia</option>
+                <option value="11.50">(GMT +11:30) Norfolk Island</option>
+                <option value="12.00">(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka</option>
+                <option value="12.75">(GMT +12:45) Chatham Islands</option>
+                <option value="13.00">(GMT +13:00) Apia, Nukualofa</option>
+                <option value="14.00">(GMT +14:00) Line Islands, Tokelau</option>
+            </select>
+            <br>
+            Day Light Savings Time? <br>
+            <input type="radio" id="Yes" name="DST" value="1">
+            <label for="Yes">YES</label><br>
+            <input type="radio" id="No" name="DST" value="0">
+            <label for="No">NO</label><br>
+            <br>
+            Pump 1 Reservoir Volume (current value %pump1ContainerVolume%): <input type="number " name="pump1ContainerVolume" multiple><br>
+            <input type="submit" value="Submit" onclick="submitSettingMessage()">
+        </form><br>
+    </div>
+    <p>
+</body>
+<iframe name="hiddenFrame" width="0" height="0" border="0" style="display: none;"></iframe>
+
+</html>
