@@ -15,3 +15,7 @@ Setting up Arduino IDE to support uploading files to SPIFFS: https://randomnerdt
 Required Hardware:
 MB85RC256V I2C FRAM. This is for saving configurations without constantly writing to internal memory to prevent excessive wearing. 
 DS3231 RTC. For keeping track of time if wifi is unavailable. 
+
+Known Problems:
+
+Need to redesign PCB to be smaller and cheaper. Software is hard-coded for a single pump. 
