@@ -21,7 +21,8 @@ bool valid_read = false;
 float calibrationVolumeL = 20.0;
 int timezoneOffset = -18000;
 bool DST = 0;
-unsigned int time_sync_check = 1800;
+unsigned int time_sync_check = 600;
+unsigned int rtc_time_sync_check = 21600;
 uint16_t page = 16384;
 };
 

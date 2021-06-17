@@ -55,7 +55,8 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org");
 volatile unsigned long epochTime_Estimate;
 unsigned long epochTime_Truth;
 volatile unsigned int ticks = 0;
-volatile unsigned int sync_ticks = 1800;
+volatile unsigned int sync_ticks = 21600;
+volatile unsigned int rtc_sync_ticks = 21600;
 
 unsigned long startMillis = 0;        // will store last time LED was updated
 unsigned long stopMillis = 0;
@@ -95,6 +96,7 @@ void ICACHE_RAM_ATTR TimerHandler()
   epochTime_Estimate = epochTime_Estimate + 1;
   ticks = ticks + 1;
   sync_ticks = sync_ticks +1;
+  rtc_sync_ticks = rtc_sync_ticks +1;
 }
 
 
@@ -521,21 +523,22 @@ ArduinoOTA.handle();
 
   if (sync_ticks > settings.time_sync_check)
   {
-    sync_ticks = 0;
-    unsigned long time_truth = getTime();
+      sync_ticks = 0;
+    DateTime now_Time = rtc.now(); 
+    epochTime_Estimate = now_Time.unixtime();     
+    
+  }
 
-    if (time_truth > 0)
-    {
+    if (rtc_sync_ticks > settings.rtc_time_sync_check)
+  {
+      rtc_sync_ticks = 0;
+    unsigned long time_truth = getTime();
+    
+    if (time_truth > epochTime_Estimate-1000)
+   {
       epochTime_Estimate = time_truth;      
       rtc.adjust(DateTime(time_truth));
-    }
-
-    else
-    {
-      DateTime now_Time = rtc.now(); 
-      epochTime_Estimate = now_Time.unixtime();      
-    }
-    
+    }   
     
   }
 
