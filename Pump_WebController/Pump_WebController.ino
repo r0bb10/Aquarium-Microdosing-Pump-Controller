@@ -31,8 +31,8 @@
 #include "Adafruit_FRAM_I2C.h"
 
 // Replace with your network credentials
-const char* ssid = "The Promise LAN";
-const char* password = "Therecanonlybeone!!!!!!!!!!!!!!!!!!!";
+const char* ssid = "<YOUR SSID>";
+const char* password = "<YOUR PWD>";
 
 // Set LED GPIO
 const int gpio_PUMP1 = 12;
