@@ -1,7 +1,16 @@
+//MODIFIED BY ALEPIRO85 - 2023-02-03
+//BASED ON ORIGINAL CODE BY WILLIAMG42
+//ON THE FORK OF THE MASTER OF EVERYTHING R0BB10
+
+#define VERSION "0.1A"
+
+//NOTES: IF AN EXTERNAL MEMORY IS USED, AS THE ORIGINAL PROJECT WANTS, YOU NEED TO DEFINE EXT_MEMORY (FOR NOOBS, UNCOMMENT NEXT CODE LINE)
+//#define EXT_MEMORY     //Enable external memory
+
 // Import required libraries
 #include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
-#include <ESPAsyncWebServer.h>
+#include <ESPAsyncWebSrv.h>
 #include <Hash.h>
 #include <FS.h>
 #include <NTPClient.h>
@@ -28,8 +37,11 @@
 
 #include "pumpStruct.h"
 
+#ifdef EXT_MEMORY
 #include "Adafruit_FRAM_I2C.h"
-
+#else
+//TODO: insert include for internal memory if needed
+#endif
 // Replace with your network credentials
 const char* ssid = "<YOUR SSID>";
 const char* password = "<YOUR PWD>";
@@ -75,9 +87,11 @@ const char* PARAM_PUMP1ENABLE = "pump1ProgStatus";
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
-
+#ifdef EXT_MEMORY
 Adafruit_FRAM_I2C fram     = Adafruit_FRAM_I2C();
-
+#else
+//TODO: insert reading parameters from internal memory
+#endif
 AsyncEventSource events("/events");
 
 void notFound(AsyncWebServerRequest *request) {
@@ -181,14 +195,16 @@ void setup() {
   Serial.begin(115200);
 
   initRTC();
-
+  #ifdef EXT_MEMORY
    if (fram.begin(0x50)) {  // you can stick the new i2c addr in here, e.g. begin(0x51);
     Serial.println("Found I2C FRAM");
   } else {
     Serial.println("I2C FRAM not identified ... check your connections?\r\n");
     Serial.println("Will continue in case this processor doesn't support repeated start\r\n");
   }
-
+  #else
+  //TODO: maybe nothing, check it
+  #endif
 
   pinMode(gpio_PUMP1, OUTPUT);
   digitalWrite(gpio_PUMP1, LOW);
@@ -248,8 +264,6 @@ void setup() {
   
   epochTime_Estimate = epochTime_Truth;
 
-
-
   
 // Interval in microsecs
   if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
@@ -259,8 +273,11 @@ void setup() {
   else
     Serial.println(F("Can't set ITimer correctly. Select another freq. or interval"));
 
-
+#ifdef EXT_MEMORY
 fram.read((uint16_t)pump1.page, tempholder);
+#else
+//TODO: read pump1 configuration
+#endif
 Serial.println("Fram Read is:");
 Serial.println(tempholder.valid_read);
 if (tempholder.valid_read)
@@ -273,9 +290,11 @@ else
 pump1.valid_read = true;
 
 
-
+#ifdef EXT_MEMORY
 fram.read((uint16_t)settings.page, tempSettings);
-
+#else
+//TODO: read pump1 configuration
+#endif
 if (tempSettings.valid_read)
 {
 settings = tempSettings;
@@ -323,7 +342,11 @@ settings.valid_read = true;
   });
 
   server.on("/save1", HTTP_GET, [] (AsyncWebServerRequest * request) {
+#ifdef EXT_MEMORY    
    fram.write((uint16_t)pump1.page, pump1);
+#else
+//TODO: write pump1 configuration
+#endif   
     request->send(SPIFFS, "/index.html", String(), false);
   });
 
@@ -397,10 +420,13 @@ settings.valid_read = true;
     else {
 
     }
+#ifdef EXT_MEMORY    
  fram.write((uint16_t)settings.page, settings);
 
  fram.write((uint16_t)pump1.page, pump1);
-
+ #else
+ //TODO: write settings and pump1 configuration
+ #endif
 
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
@@ -441,7 +467,11 @@ settings.valid_read = true;
         printf("%ld\n", (long) t);
         printf("%ld\n", epochTime_Estimate);
         pump1.nextRuntime = (long) t;
- fram.write((uint16_t)pump1.page, pump1);
+        #ifdef EXT_MEMORY
+        fram.write((uint16_t)pump1.page, pump1);
+        #else
+        //TODO: write pump1 configuration
+        #endif        
 //
       }
     }
@@ -454,7 +484,11 @@ settings.valid_read = true;
       else
       {
         pump1.volumePump_mL = temp.toFloat();
- fram.write((uint16_t)pump1.page, pump1);
+        #ifdef EXT_MEMORY        
+        fram.write((uint16_t)pump1.page, pump1);
+        #else
+        //TODO: write pump1 configuration
+        #endif        
       }
     }
 
@@ -469,7 +503,11 @@ settings.valid_read = true;
       else
       {
         pump1.dayDelay = temp.toInt();
- fram.write((uint16_t)pump1.page, pump1);
+        #ifdef EXT_MEMORY
+        fram.write((uint16_t)pump1.page, pump1);
+        #else
+        //TODO: write pump1 configuration        
+        #endif
       }
     }
 
@@ -483,7 +521,11 @@ settings.valid_read = true;
 
       else
         pump1.programEnable = temp.toInt();
- fram.write((uint16_t)pump1.page, pump1);
+        #ifdef EXT_MEMORY
+        fram.write((uint16_t)pump1.page, pump1);
+        #else
+        //TODO: write pump1 configuration
+        #endif
 
     }
 
@@ -551,7 +593,11 @@ ArduinoOTA.handle();
     pump1.nextRuntime = pump1.nextRuntime + (pump1.dayDelay) * 86400;
     pump1.totalvolumePumped_mL += pump1.volumePump_mL;
     pump1.containerVolume -= pump1.volumePump_mL;
- fram.write((uint16_t)pump1.page, pump1);
+    #ifdef EXT_MEMORY    
+    fram.write((uint16_t)pump1.page, pump1);
+    #else
+    //TODO: write pump1 configuration
+    #endif
     delay(round((pump1.volumePump_mL * pump1.CAL_pumpmS) / settings.calibrationVolumeL));
     Serial.print(round((pump1.volumePump_mL * pump1.CAL_pumpmS) / settings.calibrationVolumeL));
     digitalWrite(pump1.motor_GPIO, LOW);
@@ -563,7 +609,11 @@ ArduinoOTA.handle();
   {
     
     pump1.nextRuntime = pump1.nextRuntime + (86400*pump1.dayDelay);
- fram.write((uint16_t)pump1.page, pump1);
+    #ifdef EXT_MEMORY    
+    fram.write((uint16_t)pump1.page, pump1);
+    #else
+    //TODO: write pump1 configuration
+    #endif    
   }
 
 
