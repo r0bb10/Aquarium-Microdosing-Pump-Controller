@@ -5,7 +5,7 @@
 //DONE COMPILING
 #define VERSION "0.1A"
 
-//NOTES: IF AN EXTERNAL MEMORY IS USED, AS THE ORIGINAL PROJECT WANTS, YOU NEED TO DEFINE EXT_MEMORY (FOR NOOBS, UNCOMMENT NEXT CODE LINE)
+//NOTES: IF AN EXTERNAL MEMORY IS USED, AS THE ORIGINAL PROJECT WANTS, YOU NEED TO DEFINE EXT_MEMORY (ACTUALLY NOT WORKING, HAVE TO BE DEBUGGED, IF YOU WANT TO DO IT UNCOMMENT NEXT CODE LINE)
 //#define EXT_MEMORY     //Enable external memory
 
 // Import required libraries
@@ -18,7 +18,7 @@
 #include <WiFiUdp.h>
 #include <stdio.h>
 #include <time.h>
-#include <Wire.h>
+#include <Wire.h>               //defined but not used
 #include <RTClib.h>
 #include <ESP8266mDNS.h>
 #include <ArduinoOTA.h>
@@ -41,7 +41,8 @@
 #ifdef EXT_MEMORY
 #include "Adafruit_FRAM_I2C.h"
 #else
-//TODO: insert include for internal memory if needed
+#include <ESP_EEPROM.h>
+#define EEPROM_SIZE 16
 #endif
 // Replace with your network credentials
 const char* ssid = "<YOUR SSID>";
@@ -85,14 +86,16 @@ const char* PARAM_PUMP1AMOUNT = "pump1DispensingAmount";
 const char* PARAM_PUMP1DAY = "pump1day";
 const char* PARAM_PUMP1ENABLE = "pump1ProgStatus";
 
+boolean commitSucc=false;
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 #ifdef EXT_MEMORY
 Adafruit_FRAM_I2C fram     = Adafruit_FRAM_I2C();
 #else
-//TODO: insert reading parameters from internal memory
+//Nothing?
 #endif
+
 AsyncEventSource events("/events");
 
 void notFound(AsyncWebServerRequest *request) {
@@ -194,7 +197,7 @@ String processor(const String& var) {
 void setup() {
   // Serial port for debugging purposes
   Serial.begin(115200);
-
+  Serial.println("Initialize System");
   initRTC();
   #ifdef EXT_MEMORY
    if (fram.begin(0x50)) {  // you can stick the new i2c addr in here, e.g. begin(0x51);
@@ -204,13 +207,15 @@ void setup() {
     Serial.println("Will continue in case this processor doesn't support repeated start\r\n");
   }
   #else
-  //TODO: maybe nothing, check it
+  pinMode(SDA_PIN,OUTPUT);
+  pinMode(SCL_PIN,OUTPUT);
+  EEPROM.begin(EEPROM_SIZE);
   #endif
 
   pinMode(gpio_PUMP1, OUTPUT);
   digitalWrite(gpio_PUMP1, LOW);
 
-   WiFi.mode(WIFI_STA);
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   while (WiFi.waitForConnectResult() != WL_CONNECTED) {
     Serial.println("Connection Failed! Rebooting...");
@@ -274,39 +279,41 @@ void setup() {
   else
     Serial.println(F("Can't set ITimer correctly. Select another freq. or interval"));
 
-#ifdef EXT_MEMORY
-fram.read((uint16_t)pump1.page, tempholder);
-#else
-//TODO: read pump1 configuration
-#endif
-Serial.println("Fram Read is:");
-Serial.println(tempholder.valid_read);
-if (tempholder.valid_read)
-{
-pump1 = tempholder;
-tempholder.valid_read = false;
-}
+  #ifdef EXT_MEMORY
+    fram.read((uint16_t)pump1.page, tempholder);
+  #else
+    EEPROM.get((uint16_t)pump1.page,tempholder);
+  #endif
+  Serial.println("Fram Read is:");
+  Serial.println(tempholder.valid_read);
+  if (tempholder.valid_read)
+  {
+  pump1 = tempholder;
+  tempholder.valid_read = false;
+  }
 
-else
-pump1.valid_read = true;
-
-
-#ifdef EXT_MEMORY
-fram.read((uint16_t)settings.page, tempSettings);
-#else
-//TODO: read pump1 configuration
-#endif
-if (tempSettings.valid_read)
-{
-settings = tempSettings;
-tempSettings.valid_read = false;
-}
-else
-settings.valid_read = true;
+  else
+  pump1.valid_read = true;
 
 
-//Hard set parameters that might get changed
- pump1.motor_GPIO = gpio_PUMP1;
+  #ifdef EXT_MEMORY
+    fram.read((uint16_t)settings.page, tempSettings);
+  #else
+    EEPROM.get((uint16_t)settings.page,tempSettings);
+  #endif
+  if (tempSettings.valid_read)
+  {
+    settings = tempSettings;
+    tempSettings.valid_read = false;
+  }
+  else
+  {
+    settings.valid_read = true;
+  }
+
+
+  //Hard set parameters that might get changed
+  pump1.motor_GPIO = gpio_PUMP1;
 
   //
 
@@ -343,11 +350,13 @@ settings.valid_read = true;
   });
 
   server.on("/save1", HTTP_GET, [] (AsyncWebServerRequest * request) {
-#ifdef EXT_MEMORY    
-   fram.write((uint16_t)pump1.page, pump1);
-#else
-//TODO: write pump1 configuration
-#endif   
+  #ifdef EXT_MEMORY    
+    fram.write((uint16_t)pump1.page, pump1);
+  #else
+    EEPROM.put((uint16_t)pump1.page, pump1);
+    commitSucc = EEPROM.commit();
+    Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+  #endif   
     request->send(SPIFFS, "/index.html", String(), false);
   });
 
@@ -376,64 +385,64 @@ settings.valid_read = true;
     String temp;
 
     // GET inputString value on <ESP_IP>/get?inputString=<inputMessage>
-    if (request->hasParam(PARAM_CONTAINER1VOLUME)) {
-
+    if (request->hasParam(PARAM_CONTAINER1VOLUME)) 
+    {
       temp = request->getParam(PARAM_CONTAINER1VOLUME)->value();
-
       if (temp.length() == 0)
+      {      
         Serial.println("Empty String");
-
-
+      }        
       else
+      {
         pump1.containerVolume = temp.toFloat();
-
-
-
+      }
     }
+    
     // GET inputInt value on <ESP_IP>/get?inputInt=<inputMessage>
-    if (request->hasParam(PARAM_TIMEZONEOFFSET)) {
+    if (request->hasParam(PARAM_TIMEZONEOFFSET))
+    {
       temp = request->getParam(PARAM_TIMEZONEOFFSET)->value();
-
       if (temp.length() == 0)
+      {
         Serial.println("Empty String");
-
-
+      }
       else
+      {
         settings.timezoneOffset  = 3600 * temp.toInt();
-
-
-
+      }
     }
 
     if (request->hasParam(PARAM_DST)) {
       temp = request->getParam(PARAM_DST)->value();
 
       if (temp.length() == 0)
+      {
         Serial.println("Empty String");
-
-
+      }        
       else
+      {
         settings.DST = temp.toInt();
+      }
 
     }
-
-
-    else {
-
+    else
+    {
     }
-#ifdef EXT_MEMORY    
- fram.write((uint16_t)settings.page, settings);
-
- fram.write((uint16_t)pump1.page, pump1);
- #else
- //TODO: write settings and pump1 configuration
- #endif
+    
+    #ifdef EXT_MEMORY    
+      fram.write((uint16_t)settings.page, settings);
+      fram.write((uint16_t)pump1.page, pump1);
+    #else
+      EEPROM.put((uint16_t)settings.page, settings);
+      commitSucc = EEPROM.commit();
+      Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+      EEPROM.put((uint16_t)pump1.page, pump1);
+      commitSucc = EEPROM.commit();
+      Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+    #endif
 
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
-
-
-
 
   server.on("/getProgram", HTTP_GET, [] (AsyncWebServerRequest * request) {
 
@@ -469,11 +478,13 @@ settings.valid_read = true;
         printf("%ld\n", epochTime_Estimate);
         pump1.nextRuntime = (long) t;
         #ifdef EXT_MEMORY
-        fram.write((uint16_t)pump1.page, pump1);
+          fram.write((uint16_t)pump1.page, pump1);
         #else
-        //TODO: write pump1 configuration
+          EEPROM.put((uint16_t)pump1.page, pump1);
+          commitSucc = EEPROM.commit();
+          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
         #endif        
-//
+
       }
     }
     if (request->hasParam(PARAM_PUMP1AMOUNT)) {
@@ -486,9 +497,11 @@ settings.valid_read = true;
       {
         pump1.volumePump_mL = temp.toFloat();
         #ifdef EXT_MEMORY        
-        fram.write((uint16_t)pump1.page, pump1);
+          fram.write((uint16_t)pump1.page, pump1);
         #else
-        //TODO: write pump1 configuration
+          EEPROM.put((uint16_t)pump1.page, pump1);
+          commitSucc = EEPROM.commit();
+          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
         #endif        
       }
     }
@@ -507,7 +520,9 @@ settings.valid_read = true;
         #ifdef EXT_MEMORY
         fram.write((uint16_t)pump1.page, pump1);
         #else
-        //TODO: write pump1 configuration        
+        EEPROM.put((uint16_t)pump1.page, pump1);
+        commitSucc = EEPROM.commit();
+        Serial.println((commitSucc) ? "Commit OK" : "Commit failed");       
         #endif
       }
     }
@@ -525,7 +540,9 @@ settings.valid_read = true;
         #ifdef EXT_MEMORY
         fram.write((uint16_t)pump1.page, pump1);
         #else
-        //TODO: write pump1 configuration
+          EEPROM.put((uint16_t)pump1.page, pump1);
+          commitSucc = EEPROM.commit();
+          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
         #endif
 
     }
@@ -595,9 +612,11 @@ ArduinoOTA.handle();
     pump1.totalvolumePumped_mL += pump1.volumePump_mL;
     pump1.containerVolume -= pump1.volumePump_mL;
     #ifdef EXT_MEMORY    
-    fram.write((uint16_t)pump1.page, pump1);
+      fram.write((uint16_t)pump1.page, pump1);
     #else
-    //TODO: write pump1 configuration
+      EEPROM.put((uint16_t)pump1.page, pump1);
+      commitSucc = EEPROM.commit();
+      Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
     #endif
     delay(round((pump1.volumePump_mL * pump1.CAL_pumpmS) / settings.calibrationVolumeL));
     Serial.print(round((pump1.volumePump_mL * pump1.CAL_pumpmS) / settings.calibrationVolumeL));
@@ -613,7 +632,9 @@ ArduinoOTA.handle();
     #ifdef EXT_MEMORY    
     fram.write((uint16_t)pump1.page, pump1);
     #else
-    //TODO: write pump1 configuration
+      EEPROM.put((uint16_t)pump1.page, pump1);
+      commitSucc = EEPROM.commit();
+      Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
     #endif    
   }
 

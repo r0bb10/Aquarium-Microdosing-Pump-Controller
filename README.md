@@ -8,6 +8,7 @@ ESPAsyncWebServer
 ESPAsyncTCP
 NTPClient
 ESP8266TimerInterrupt
+ESP_EEPROM by j-watson
 
 Also needed:
 Setting up Arduino IDE to support uploading files to SPIFFS: https://randomnerdtutorials.com/install-esp8266-filesystem-uploader-arduino-ide/
