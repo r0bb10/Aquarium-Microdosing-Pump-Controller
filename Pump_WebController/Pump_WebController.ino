@@ -380,7 +380,7 @@ void setup() {
   });
 
 
-  server.on("/getSetting", HTTP_GET, [] (AsyncWebServerRequest * request) {
+    server.on("/getSetting", HTTP_GET, [] (AsyncWebServerRequest * request) {
 
     String temp;
 
@@ -412,7 +412,8 @@ void setup() {
       }
     }
 
-    if (request->hasParam(PARAM_DST)) {
+    if (request->hasParam(PARAM_DST))
+    {
       temp = request->getParam(PARAM_DST)->value();
 
       if (temp.length() == 0)
@@ -450,8 +451,9 @@ void setup() {
       String temp = request->getParam(PARAM_PUMP1DATETIME)->value();
 
       if (temp.length() == 0)
+      {
         Serial.println("Empty String");
-
+      }
       else
       {
         temp += ":00";
@@ -462,37 +464,36 @@ void setup() {
 
 
         if (strptime(temp.c_str(), "%Y-%m-%dT%H:%M:%S", &tm) == NULL)
+        {
           /* Handle error */;
-
-
-        tm.tm_isdst = 0;      /* Not set by strptime(); tells mktime()
-                          to determine whether daylight saving time
-                          is in effect */
-
+          tm.tm_isdst = 0;      /* Not set by strptime(); tells mktime()to determine whether daylight saving time is in effect */
+        }
   
         t = mktime(&tm);
         t = t - settings.timezoneOffset - (3600*settings.DST);
         if (t == -1)
+        {
           /* Handle error */;
-        printf("%ld\n", (long) t);
-        printf("%ld\n", epochTime_Estimate);
-        pump1.nextRuntime = (long) t;
-        #ifdef EXT_MEMORY
-          fram.write((uint16_t)pump1.page, pump1);
-        #else
-          EEPROM.put((uint16_t)pump1.page, pump1);
-          commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
-        #endif        
-
+          printf("%ld\n", (long) t);
+          printf("%ld\n", epochTime_Estimate);
+          pump1.nextRuntime = (long) t;
+          #ifdef EXT_MEMORY
+            fram.write((uint16_t)pump1.page, pump1);
+          #else
+            EEPROM.put((uint16_t)pump1.page, pump1);
+            commitSucc = EEPROM.commit();
+            Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+          #endif        
+        }
       }
     }
     if (request->hasParam(PARAM_PUMP1AMOUNT)) {
       String temp = request->getParam(PARAM_PUMP1AMOUNT)->value();
 
       if (temp.length() == 0)
+      {
         Serial.println("Empty String");
-
+      }
       else
       {
         pump1.volumePump_mL = temp.toFloat();
@@ -512,8 +513,9 @@ void setup() {
       String temp = request->getParam(PARAM_PUMP1DAY)->value();
 
       if (temp.length() == 0)
+      {
         Serial.println("Empty String");
-
+      }
       else
       {
         pump1.dayDelay = temp.toInt();
@@ -532,10 +534,11 @@ void setup() {
       Serial.println(temp);
 
       if (temp.length() == 0)
+      {
         Serial.println("Empty String");
-
-
+      }
       else
+      {
         pump1.programEnable = temp.toInt();
         #ifdef EXT_MEMORY
         fram.write((uint16_t)pump1.page, pump1);
@@ -544,36 +547,29 @@ void setup() {
           commitSucc = EEPROM.commit();
           Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
         #endif
+      }
 
     }
-
-
 
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
 
-
-
-
    // Handle Web Server Events
-  events.onConnect([](AsyncEventSourceClient *client){
-    if(client->lastId()){
-      Serial.printf("Client reconnected! Last message ID that it got is: %u\n", client->lastId());
-    }
-    // send event with message "hello!", id current millis
-    // and set reconnect delay to 1 second
-    client->send("hello!", NULL, millis(), 10000);
+   events.onConnect([](AsyncEventSourceClient *client){
+     if(client->lastId()){
+       Serial.printf("Client reconnected! Last message ID that it got is: %u\n", client->lastId());
+     }
+     // send event with message "hello!", id current millis
+     // and set reconnect delay to 1 second
+     client->send("hello!", NULL, millis(), 10000);
   });
   server.addHandler(&events);
-
-  
-
   server.onNotFound(notFound);
   server.begin();
 }
 
 void loop() {
-ArduinoOTA.handle();
+  ArduinoOTA.handle();
 
   if (ticks > 0)
   {
@@ -583,19 +579,17 @@ ArduinoOTA.handle();
 
   if (sync_ticks > settings.time_sync_check)
   {
-      sync_ticks = 0;
+    sync_ticks = 0;
     DateTime now_Time = rtc.now(); 
     epochTime_Estimate = now_Time.unixtime();     
-    
   }
-
-    if (rtc_sync_ticks > settings.rtc_time_sync_check)
+  
+  if (rtc_sync_ticks > settings.rtc_time_sync_check)
   {
-      rtc_sync_ticks = 0;
+    rtc_sync_ticks = 0;
     unsigned long time_truth = getTime();
-    
     if (time_truth > epochTime_Estimate-1000)
-   {
+    {
       epochTime_Estimate = time_truth;      
       rtc.adjust(DateTime(time_truth));
     }   
@@ -624,10 +618,8 @@ ArduinoOTA.handle();
     events.send(String(pump1.nextRuntime).c_str(),"pump1nextDatetime",millis());
     
   }
-
   else if ((pump1.nextRuntime  < epochTime_Estimate) && (pump1.programEnable == true))
   {
-    
     pump1.nextRuntime = pump1.nextRuntime + (86400*pump1.dayDelay);
     #ifdef EXT_MEMORY    
     fram.write((uint16_t)pump1.page, pump1);
