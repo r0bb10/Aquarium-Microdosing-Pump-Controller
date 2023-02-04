@@ -8,15 +8,17 @@ ESPAsyncWebServer
 ESPAsyncTCP
 NTPClient
 ESP8266TimerInterrupt
-ESP_EEPROM by j-watson
+#Alepiro85 Changelog: ESP_EEPROM by j-watson
 
 Also needed:
 Setting up Arduino IDE to support uploading files to SPIFFS: https://randomnerdtutorials.com/install-esp8266-filesystem-uploader-arduino-ide/
 
 Required Hardware:
 MB85RC256V I2C FRAM. This is for saving configurations without constantly writing to internal memory to prevent excessive wearing. 
+#Alepiro85 Changelog: from version 0.1A: Not necessary, it is possible to save parameters on EEPROM
 DS3231 RTC. For keeping track of time if wifi is unavailable. 
 
 Known Problems:
-
 Need to redesign PCB to be smaller and cheaper. Software is hard-coded for a single pump. 
+#Alepiro85 Changelog: from Version 0.1B: Software manages 4 pumps control
+
