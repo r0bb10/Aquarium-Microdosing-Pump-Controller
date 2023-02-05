@@ -44,8 +44,8 @@
 #define SCL_PIN 5
 
 // Replace with your network credentials
-const char* ssid = "<YOUR SSID>";
-const char* password = "<YOUR PWD>";
+const char* ssid = "SSID";
+const char* password = "PW";
 
 // Set PUMP GPIO
 const int gpio_PUMP1 = 12;
@@ -115,6 +115,7 @@ const char* PARAM_PUMP4ENABLE = "pump4ProgStatus";
 
 
 boolean commitSucc=false;
+boolean rtcWorking=false;
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -150,12 +151,17 @@ void ICACHE_RAM_ATTR TimerHandler()
 void initRTC()
 {
   if (! rtc.begin()) {
-    Serial.println("Couldn't find RTC");
+    Serial.println("Couldn't find RTC, proceed with internal clock");
     Serial.flush();
-    abort();
+    rtcWorking = false;
+//    abort();
+  }
+  else
+  {
+    rtcWorking = true;
   }
 
-  if (rtc.lostPower()) {
+  if ((rtc.lostPower())&&(rtcWorking == true)) {
     Serial.println("RTC lost power, let's set the time!");
     // When time needs to be set on a new device, or after a power loss, the
     // following line sets the RTC to the date & time this sketch was compiled
@@ -449,7 +455,15 @@ void setup() {
   }  
   
   timeClient.begin();
-  DateTime now_Time = rtc.now(); 
+  DateTime now_Time;
+  if(rtcWorking == true)
+  {
+    DateTime now_Time = rtc.now(); 
+  }
+  else
+  {
+     //TODO: rtc fail implementantion
+  }
   epochTime_Truth = now_Time.unixtime();
   
  // Serial.println(epochTime_Truth);
@@ -770,10 +784,10 @@ void setup() {
     #else
       EEPROM.put((uint16_t)settings.page, settings);
       commitSucc = EEPROM.commit();
-      Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+      Serial.println((commitSucc) ? "OK001" : "F001");
       EEPROM.put((uint16_t)pump1.page, pump1);
       commitSucc = EEPROM.commit();
-      Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+      Serial.println((commitSucc) ? "OK002" : "F002");
     #endif
 
     request->send(SPIFFS, "/index.html", String(), false, processor);
@@ -811,7 +825,7 @@ void setup() {
           #else
             EEPROM.put((uint16_t)pump1.page, pump1);
             commitSucc = EEPROM.commit();
-            Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+            Serial.println((commitSucc) ? "OK003" : "Commit failed");
           #endif        
         }
       }
@@ -830,7 +844,7 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump1.page, pump1);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+          Serial.println((commitSucc) ? "OK004" : "Commit failed");
         #endif        
       }
     }
@@ -849,7 +863,7 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump1.page, pump1);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");       
+          Serial.println((commitSucc) ? "OK005" : "Commit failed");       
         #endif
       }
     }
@@ -869,7 +883,7 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump1.page, pump1);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+          Serial.println((commitSucc) ? "OK006" : "Commit failed");
         #endif
       }
     }
@@ -904,7 +918,7 @@ void setup() {
           #else
             EEPROM.put((uint16_t)pump2.page, pump2);
             commitSucc = EEPROM.commit();
-            Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+            Serial.println((commitSucc) ? "OK007" : "Commit failed");
           #endif        
         }
       }
@@ -923,7 +937,7 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump2.page, pump2);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+          Serial.println((commitSucc) ? "OK008" : "Commit failed");
         #endif        
       }
     }
@@ -942,7 +956,7 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump2.page, pump2);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");       
+          Serial.println((commitSucc) ? "OK009" : "Commit failed");       
         #endif
       }
     }
@@ -962,7 +976,7 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump2.page, pump2);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+          Serial.println((commitSucc) ? "OK010" : "Commit failed");
         #endif
       }
     }
@@ -997,7 +1011,7 @@ void setup() {
           #else
             EEPROM.put((uint16_t)pump3.page, pump3);
             commitSucc = EEPROM.commit();
-            Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+            Serial.println((commitSucc) ? "OK011" : "Commit failed");
           #endif        
         }
       }
@@ -1016,7 +1030,7 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump3.page, pump3);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+          Serial.println((commitSucc) ? "OK012" : "Commit failed");
         #endif        
       }
     }
@@ -1035,7 +1049,7 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump3.page, pump3);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");       
+          Serial.println((commitSucc) ? "OK013" : "Commit failed");       
         #endif
       }
     }
@@ -1055,7 +1069,7 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump3.page, pump3);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+          Serial.println((commitSucc) ? "OK014" : "Commit failed");
         #endif
       }
     }
@@ -1090,7 +1104,7 @@ void setup() {
           #else
             EEPROM.put((uint16_t)pump4.page, pump4);
             commitSucc = EEPROM.commit();
-            Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+            Serial.println((commitSucc) ? "OK015" : "Commit failed");
           #endif        
         }
       }
@@ -1109,7 +1123,7 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump4.page, pump4);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+          Serial.println((commitSucc) ? "OK016" : "Commit failed");
         #endif        
       }
     }
@@ -1128,7 +1142,7 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump4.page, pump4);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");       
+          Serial.println((commitSucc) ? "OK017" : "Commit failed");       
         #endif
       }
     }
@@ -1148,7 +1162,7 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump1.page, pump4);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+          Serial.println((commitSucc) ? "OK018" : "Commit failed");
         #endif
       }
     }
@@ -1180,7 +1194,15 @@ void loop() {
   if (sync_ticks > settings.time_sync_check)
   {
     sync_ticks = 0;
-    DateTime now_Time = rtc.now(); 
+    DateTime now_Time;
+    if(rtcWorking == true)
+    {
+      DateTime now_Time = rtc.now(); 
+    }
+    else
+    {
+       //TODO: rtc fail implementantion
+    }
     epochTime_Estimate = now_Time.unixtime();     
   }
   if (rtc_sync_ticks > settings.rtc_time_sync_check)
@@ -1190,7 +1212,14 @@ void loop() {
     if (time_truth > epochTime_Estimate-1000)
     {
       epochTime_Estimate = time_truth;      
-      rtc.adjust(DateTime(time_truth));
+      if(rtcWorking == true)
+      {
+         rtc.adjust(DateTime(time_truth));
+      }
+      else
+      {
+         //TODO: rtc fail implementantion
+      }
     }   
   }
 
@@ -1216,7 +1245,7 @@ void checkPump(pumpStruct pump)
     #else
       EEPROM.put((uint16_t)pump.page, pump);
       commitSucc = EEPROM.commit();
-      Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+      Serial.println((commitSucc) ? "OK019" : "Commit failed");
     #endif
     delay(round((pump.volumePump_mL * pump.CAL_pumpmS) / settings.calibrationVolumeL));
     Serial.print(round((pump.volumePump_mL * pump.CAL_pumpmS) / settings.calibrationVolumeL));
@@ -1231,7 +1260,7 @@ void checkPump(pumpStruct pump)
     #else
       EEPROM.put((uint16_t)pump.page, pump);
       commitSucc = EEPROM.commit();
-      Serial.println((commitSucc) ? "Commit OK" : "Commit failed");
+      Serial.println((commitSucc) ? "OK020" : "Commit failed");
     #endif    
   }
 }
