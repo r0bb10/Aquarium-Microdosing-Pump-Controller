@@ -44,8 +44,8 @@
 #define SCL_PIN 5
 
 // Replace with your network credentials
-const char* ssid = "SSID";
-const char* password = "PW";
+const char* ssid = "Chi legge puzza";
+const char* password = "T3QU1Puzz4!";
 
 // Set PUMP GPIO
 const int gpio_PUMP1 = 12;
@@ -1255,12 +1255,12 @@ void checkPump(pumpStruct pump)
   else if ((pump.nextRuntime  < epochTime_Estimate) && (pump.programEnable == true))
   {
     pump.nextRuntime = pump.nextRuntime + (86400*pump.dayDelay);
-    #ifdef EXT_MEMORY    
-    fram.write((uint16_t)pump.page, pump);
+/*    #ifdef EXT_MEMORY    
+      fram.write((uint16_t)pump.page, pump);
     #else
       EEPROM.put((uint16_t)pump.page, pump);
       commitSucc = EEPROM.commit();
       Serial.println((commitSucc) ? "OK020" : "Commit failed");
-    #endif    
+    #endif    */
   }
 }

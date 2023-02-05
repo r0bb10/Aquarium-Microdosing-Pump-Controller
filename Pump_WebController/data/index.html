@@ -19,29 +19,45 @@
        <h3>Status</h3>
        <p> Current Date/Time: </p>
        <p id="currentDatetime"> Current Time</p> <br>
+		<table>
+		
+		  <tr>
+			<th>PUMP NUMBER</th>
+			<th>STATUS</th>
+			<th>NEXT DOSE</th>
+			<th>DISPENSING AMOUNT in mL</th>
+			<th>RESERVOIR VOLUME in mL</th>
+		  </tr>
+		  <tr>
+			<th>01</th>
+			<th id="pump1nextDatetime">%pump1ProgStatus%</th>
+			<th>%pump1ProgTime%</th>
+			<th>%pump1DispensingAmount%</th>
+			<th>%pump1ContainerVolume%</th>
+		  </tr>
+		  <tr>
+			<th>02</th>
+			<th id="pump2nextDatetime">%pump2ProgStatus%</th>
+			<th>%pump2ProgTime%</th>
+			<th>%pump2DispensingAmount%</th>
+			<th>%pump2ContainerVolume%</th>
+		  </tr>
+		  <tr>
+			<th>03</th>
+			<th id="pump3nextDatetime">%pump3ProgStatus%</th>
+			<th>%pump3ProgTime%</th>
+			<th>%pump3DispensingAmount%</th>
+			<th>%pump3ContainerVolume%</th>
+		  </tr>
+		  <tr>
+			<th>04</th>
+			<th id="pump4nextDatetime">%pump4ProgStatus%</th>
+			<th>%pump4ProgTime%</th>
+			<th>%pump4DispensingAmount%</th>
+			<th>%pump4ContainerVolume%</th>
+		  </tr>
 
-
-       <p> Pump 1 Program: %pump1ProgStatus%  </p>
-       <p id="pump1nextDatetime"> Pump 1 next active: %pump1ProgTime% </p>
-       <p> Pump 1 Dispensing Amount: %pump1DispensingAmount% mL </p>
-       <p> Pump 1 Reservoir Volume: %pump1ContainerVolume% mL </p>
-	   
-	   <p> Pump 2 Program: %pump2ProgStatus%  </p>
-       <p id="pump2nextDatetime"> Pump 2 next active: %pump2ProgTime% </p>
-       <p> Pump 2 Dispensing Amount: %pump2DispensingAmount% mL </p>
-       <p> Pump 2 Reservoir Volume: %pump2ContainerVolume% mL </p>
-	   
-	   <p> Pump 3 Program: %pump3ProgStatus%  </p>
-       <p id="pump3nextDatetime"> Pump 3 next active: %pump3ProgTime% </p>
-       <p> Pump 3 Dispensing Amount: %pump3DispensingAmount% mL </p>
-       <p> Pump 3 Reservoir Volume: %pump3ContainerVolume% mL </p>
-	   
-	   <p> Pump 4 Program: %pump4ProgStatus%  </p>
-       <p id="pump1nextDatetime"> Pump 4 next active: %pump4ProgTime% </p>
-       <p> Pump 4 Dispensing Amount: %pump4DispensingAmount% mL </p>
-       <p> Pump 4 Reservoir Volume: %pump4ContainerVolume% mL </p>
-
-
+		</table>
     </div>
     <div id="Programs" class="tabcontent">
         <h3>Programs</h3>
@@ -112,7 +128,7 @@
     </div>
     <div id="Calibration" class="tabcontent">
         <h3>Calibration</h3>
-        <span class="sensor-labels">Pump 1 Calibration (%calibrationVolume% mL):</span>
+        <span class="sensor-labels">Pumps Calibration (%calibrationVolume% mL):</span>
         <span id="pump1runtime">%STATE%</span>
         <span> Seconds </span>
         </p>
@@ -120,6 +136,18 @@
             <script src="/javascript.js"></script>
             <button class="button" onmousedown="toggleCheckbox('cal1on');" ontouchstart="toggleCheckbox('cal1on');" onmouseup="toggleCheckbox('cal1off');" ontouchend="toggleCheckbox('cal1off');">RUN PUMP 1</button>
             <button class="button" onmouseup="toggleCheckbox('save1');" ontouchend="toggleCheckbox('save1');">SAVE PUMP 1 CALIBRATION</button>
+			
+			<script src="/javascript.js"></script>
+            <button class="button" onmousedown="toggleCheckbox('cal2on');" ontouchstart="toggleCheckbox('cal1on');" onmouseup="toggleCheckbox('cal1off');" ontouchend="toggleCheckbox('cal1off');">RUN PUMP 2</button>
+            <button class="button" onmouseup="toggleCheckbox('save2');" ontouchend="toggleCheckbox('save2');">SAVE PUMP 2 CALIBRATION</button>
+			
+			<script src="/javascript.js"></script>
+            <button class="button" onmousedown="toggleCheckbox('cal3on');" ontouchstart="toggleCheckbox('cal1on');" onmouseup="toggleCheckbox('cal1off');" ontouchend="toggleCheckbox('cal1off');">RUN PUMP 3</button>
+            <button class="button" onmouseup="toggleCheckbox('save3');" ontouchend="toggleCheckbox('save3');">SAVE PUMP 3 CALIBRATION</button>
+			
+			<script src="/javascript.js"></script>
+            <button class="button" onmousedown="toggleCheckbox('cal4on');" ontouchstart="toggleCheckbox('cal1on');" onmouseup="toggleCheckbox('cal1off');" ontouchend="toggleCheckbox('cal1off');">RUN PUMP 4</button>
+            <button class="button" onmouseup="toggleCheckbox('save4');" ontouchend="toggleCheckbox('save4');">SAVE PUMP 4 CALIBRATION</button>
     </div>
     <div id="Settings" class="tabcontent">
         <h3>Settings</h3>
