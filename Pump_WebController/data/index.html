@@ -18,10 +18,11 @@
     <button class="tablink" onclick="openPage('Settings', this)" id="SettingsOpen">Settings</button>
     <div id="Status" class="tabcontent">
        <h3>Status</h3>
-       <p> Current Date/Time: </p>
-       <p id="currentDatetime"> Current Time</p> <br>
-		<table>
-		
+		<table class="center">
+		  <tr>
+			<th>Current Date/Time:</th>
+			<th id="currentDatetime"> Current Time</th>
+		  </tr>
 		  <tr>
 			<th>PUMP NUMBER</th>
 			<th>STATUS</th>
@@ -30,32 +31,32 @@
 			<th>RESERVOIR VOLUME in mL</th>
 		  </tr>
 		  <tr>
-			<th>01</th>
-			<th id="pump1nextDatetime">%pump1ProgStatus%</th>
-			<th>%pump1ProgTime%</th>
-			<th>%pump1DispensingAmount%</th>
-			<th>%pump1ContainerVolume%</th>
+			<td>01</td>
+			<td id="pump1nextDatetime">%pump1ProgStatus%</td>
+			<td>%pump1ProgTime%</td>
+			<td>%pump1DispensingAmount%</td>
+			<td>%pump1ContainerVolume%</td>
 		  </tr>
 		  <tr>
-			<th>02</th>
-			<th id="pump2nextDatetime">%pump2ProgStatus%</th>
-			<th>%pump2ProgTime%</th>
-			<th>%pump2DispensingAmount%</th>
-			<th>%pump2ContainerVolume%</th>
+			<td>02</td>
+			<td id="pump2nextDatetime">%pump2ProgStatus%</td>
+			<td>%pump2ProgTime%</td>
+			<td>%pump2DispensingAmount%</td>
+			<td>%pump2ContainerVolume%</td>
 		  </tr>
 		  <tr>
-			<th>03</th>
-			<th id="pump3nextDatetime">%pump3ProgStatus%</th>
-			<th>%pump3ProgTime%</th>
-			<th>%pump3DispensingAmount%</th>
-			<th>%pump3ContainerVolume%</th>
+			<td>03</td>
+			<td id="pump3nextDatetime">%pump3ProgStatus%</td>
+			<td>%pump3ProgTime%</td>
+			<td>%pump3DispensingAmount%</td>
+			<td>%pump3ContainerVolume%</td>
 		  </tr>
 		  <tr>
-			<th>04</th>
-			<th id="pump4nextDatetime">%pump4ProgStatus%</th>
-			<th>%pump4ProgTime%</th>
-			<th>%pump4DispensingAmount%</th>
-			<th>%pump4ContainerVolume%</th>
+			<td>04</td>
+			<td id="pump4nextDatetime">%pump4ProgStatus%</td>
+			<td>%pump4ProgTime%</td>
+			<td>%pump4DispensingAmount%</td>
+			<td>%pump4ContainerVolume%</td>
 		  </tr>
 
 		</table>
@@ -63,7 +64,7 @@
     <div id="Programs" class="tabcontent">
         <h3>Programs</h3>
         <script src="/javascript.js"></script>
-   	<table>
+   	<table class="center">
 		
 		  <tr>
 			<th>PUMP NUMBER</th>
@@ -71,58 +72,75 @@
 			<th>START TIME</th>
 			<th>DISPENSING AMOUNT in mL</th>
 			<th>FREQUENCY</th>
+			<th>RESERVOIR VOL in mL</th>
 			<th>SUBMIT</th>
 		  </tr>
 		  <tr>
 			<form action="/getProgram" target="hiddenFrame">  
-				<th>01</th>
-				<th>
-					%pump1ProgStatus%<input type="radio" id="Yes" name="pump1ProgStatus" value="1"><label for="Yes">YES</label>
-					<input type="radio" id="No" name="pump1ProgStatus" value="0"><label for="No">NO</label>
-				</th>
-				<th><input type="datetime-local" name="pump1DateTime" multiple></th>
-				<th>%pump1DispensingAmount%<input type="number " name="pump1DispensingAmount" multiple></th>
-				<th>%pump1day%<input type="number " name="pump1day" multiple></th>
-				<th><input type="submit" value="Submit" onclick="submitProgramMessage()"></th>
+				<td>01</td>
+				<td>
+					%pump1ProgStatus%
+					<select name="pump1ProgStatus">
+						<option id="No" value="0">NO</option>
+						<option id="Yes" value="1">YES</option>
+					</select>
+				</td>
+				<td><input type="datetime-local" name="pump1DateTime" multiple></td>
+				<td>%pump1DispensingAmount%<input type="number " name="pump1DispensingAmount" multiple></td>
+				<td>%pump1day%<input type="number " name="pump1day" multiple></td>
+				<td>%pump1ContainerVolume% <input type="number " name="pump1ContainerVolume" multiple></td>
+				<td><input type="submit" value="Submit" onclick="submitProgramMessage()"></td>
 			</form>	
 		  </tr>
 		  <tr>
 			<form action="/getProgram" target="hiddenFrame">  
-				<th>02</th>
-				<th>
-					%pump2ProgStatus%<input type="radio" id="Yes" name="pump2ProgStatus" value="1"><label for="Yes">YES</label>
-					<input type="radio" id="No" name="pump2ProgStatus" value="0"><label for="No">NO</label>
-				</th>
-				<th><input type="datetime-local" name="pump2DateTime" multiple></th>
-				<th>%pump2DispensingAmount%<input type="number " name="pump2DispensingAmount" multiple></th>
-				<th>%pump2day%<input type="number " name="pump2day" multiple></th>
-				<th><input type="submit" value="Submit" onclick="submitProgramMessage()"></th>
+				<td>02</td>
+				<td>
+					%pump2ProgStatus%
+					<select name="pump2ProgStatus">
+						<option id="No" value="0">NO</option>
+						<option id="Yes" value="1">YES</option>
+					</select>
+				</td>
+				<td><input type="datetime-local" name="pump2DateTime" multiple></td>
+				<td>%pump2DispensingAmount%<input type="number " name="pump2DispensingAmount" multiple></td>
+				<td>%pump2day%<input type="number " name="pump2day" multiple></td>
+				<td>%pump2ContainerVolume% <input type="number " name="pump2ContainerVolume" multiple></td>
+				<td><input type="submit" value="Submit" onclick="submitProgramMessage()"></td>
 			</form>	
 		  </tr>
 		  <tr>
 			<form action="/getProgram" target="hiddenFrame">  
-				<th>03</th>
-				<th>
-					%pump3ProgStatus%<input type="radio" id="Yes" name="pump3ProgStatus" value="1"><label for="Yes">YES</label>
-					<input type="radio" id="No" name="pump3ProgStatus" value="0"><label for="No">NO</label>
-				</th>
-				<th><input type="datetime-local" name="pump3DateTime" multiple></th>
-				<th>%pump3DispensingAmount%<input type="number " name="pump3DispensingAmount" multiple></th>
-				<th>%pump3day%<input type="number " name="pump3day" multiple></th>
-				<th><input type="submit" value="Submit" onclick="submitProgramMessage()"></th>
+				<td>03</td>
+				<td>
+					%pump3ProgStatus%
+					<select name="pump3ProgStatus">
+						<option id="No" value="0">NO</option>
+						<option id="Yes" value="1">YES</option>
+					</select>
+				</td>
+				<td><input type="datetime-local" name="pump3DateTime" multiple></td>
+				<td>%pump3DispensingAmount%<input type="number " name="pump3DispensingAmount" multiple></td>
+				<td>%pump3day%<input type="number " name="pump3day" multiple></td>
+				<td>%pump3ContainerVolume% <input type="number " name="pump3ContainerVolume" multiple></td>
+				<td><input type="submit" value="Submit" onclick="submitProgramMessage()"></td>
 			</form>	
 		  </tr>
 		  <tr>
 			<form action="/getProgram" target="hiddenFrame">  
-				<th>04</th>
-				<th>
-					%pump1ProgStatus%<input type="radio" id="Yes" name="pump4ProgStatus" value="1"><label for="Yes">YES</label>
-					<input type="radio" id="No" name="pump4ProgStatus" value="0"><label for="No">NO</label>
-				</th>
-				<th><input type="datetime-local" name="pump4DateTime" multiple></th>
-				<th>%pump4DispensingAmount%<input type="number " name="pump4DispensingAmount" multiple></th>
-				<th>%pump4day%<input type="number " name="pump4day" multiple></th>
-				<th><input type="submit" value="Submit" onclick="submitProgramMessage()"></th>
+				<td>04</td>
+				<td>
+					%pump4ProgStatus%
+					<select name="pump4ProgStatus">
+						<option id="No" value="0">NO</option>
+						<option id="Yes" value="1">YES</option>
+					</select>
+				</td>
+				<td><input type="datetime-local" name="pump4DateTime" multiple></td>
+				<td>%pump4DispensingAmount%<input type="number " name="pump4DispensingAmount" multiple></td>
+				<td>%pump4day%<input type="number " name="pump4day" multiple></td>
+				<td>%pump4ContainerVolume% <input type="number " name="pump4ContainerVolume" multiple></td>
+				<td><input type="submit" value="Submit" onclick="submitProgramMessage()"></td>
 			</form>	
 		  </tr>
 		</table>
@@ -130,10 +148,28 @@
     <div id="ManualControl" class="tabcontent">
         <h3>Manual Control</h3>
         <script src="/javascript.js"></script>
-        <button class="button" onmousedown="toggleCheckbox('on1');" ontouchstart="toggleCheckbox('on1');" onmouseup="toggleCheckbox('off1');" ontouchend="toggleCheckbox('off1');">RUN PUMP 1</button>
-		<button class="button" onmousedown="toggleCheckbox('on2');" ontouchstart="toggleCheckbox('on2');" onmouseup="toggleCheckbox('off2');" ontouchend="toggleCheckbox('off2');">RUN PUMP 2</button>
-		<button class="button" onmousedown="toggleCheckbox('on3');" ontouchstart="toggleCheckbox('on3');" onmouseup="toggleCheckbox('off3');" ontouchend="toggleCheckbox('off3');">RUN PUMP 3</button>
-		<button class="button" onmousedown="toggleCheckbox('on4');" ontouchstart="toggleCheckbox('on4');" onmouseup="toggleCheckbox('off4');" ontouchend="toggleCheckbox('off4');">RUN PUMP 4</button>
+		<table class="center">
+		  <tr>
+			<th>
+				<button class="button" onmousedown="toggleCheckbox('on1');" ontouchstart="toggleCheckbox('on1');" onmouseup="toggleCheckbox('off1');" ontouchend="toggleCheckbox('off1');">RUN PUMP 1</button>
+			</th>
+		  </tr>
+		  <tr>
+			<th>
+				<button class="button" onmousedown="toggleCheckbox('on2');" ontouchstart="toggleCheckbox('on2');" onmouseup="toggleCheckbox('off2');" ontouchend="toggleCheckbox('off2');">RUN PUMP 2</button>
+			</th>
+		  </tr>
+		  <tr>
+			<th>
+				<button class="button" onmousedown="toggleCheckbox('on3');" ontouchstart="toggleCheckbox('on3');" onmouseup="toggleCheckbox('off3');" ontouchend="toggleCheckbox('off3');">RUN PUMP 3</button>
+			</th>
+		  </tr>
+		  <tr>
+			<th>
+				<button class="button" onmousedown="toggleCheckbox('on4');" ontouchstart="toggleCheckbox('on4');" onmouseup="toggleCheckbox('off4');" ontouchend="toggleCheckbox('off4');">RUN PUMP 4</button>
+			</th>
+		  </tr>
+		</table>
     </div>
     <div id="Calibration" class="tabcontent">
         <h3>Calibration</h3>
@@ -143,20 +179,40 @@
         </p>
         <p>
             <script src="/javascript.js"></script>
-            <button class="button" onmousedown="toggleCheckbox('cal1on');" ontouchstart="toggleCheckbox('cal1on');" onmouseup="toggleCheckbox('cal1off');" ontouchend="toggleCheckbox('cal1off');">RUN PUMP 1</button>
-            <button class="button" onmouseup="toggleCheckbox('save1');" ontouchend="toggleCheckbox('save1');">SAVE PUMP 1 CALIBRATION</button>
-			
-			<script src="/javascript.js"></script>
-            <button class="button" onmousedown="toggleCheckbox('cal2on');" ontouchstart="toggleCheckbox('cal1on');" onmouseup="toggleCheckbox('cal1off');" ontouchend="toggleCheckbox('cal1off');">RUN PUMP 2</button>
-            <button class="button" onmouseup="toggleCheckbox('save2');" ontouchend="toggleCheckbox('save2');">SAVE PUMP 2 CALIBRATION</button>
-			
-			<script src="/javascript.js"></script>
-            <button class="button" onmousedown="toggleCheckbox('cal3on');" ontouchstart="toggleCheckbox('cal1on');" onmouseup="toggleCheckbox('cal1off');" ontouchend="toggleCheckbox('cal1off');">RUN PUMP 3</button>
-            <button class="button" onmouseup="toggleCheckbox('save3');" ontouchend="toggleCheckbox('save3');">SAVE PUMP 3 CALIBRATION</button>
-			
-			<script src="/javascript.js"></script>
-            <button class="button" onmousedown="toggleCheckbox('cal4on');" ontouchstart="toggleCheckbox('cal1on');" onmouseup="toggleCheckbox('cal1off');" ontouchend="toggleCheckbox('cal1off');">RUN PUMP 4</button>
-            <button class="button" onmouseup="toggleCheckbox('save4');" ontouchend="toggleCheckbox('save4');">SAVE PUMP 4 CALIBRATION</button>
+				<table class="center">
+					<tr>
+						<th>
+							<button class="button" onmousedown="toggleCheckbox('cal1on');" ontouchstart="toggleCheckbox('cal1on');" onmouseup="toggleCheckbox('cal1off');" ontouchend="toggleCheckbox('cal1off');">RUN PUMP 1</button>
+						</th>
+						<th>
+							<button class="button" onmouseup="toggleCheckbox('save1');" ontouchend="toggleCheckbox('save1');">SAVE PUMP 1 CALIBRATION</button>
+						</th>
+					</tr>
+					<tr>
+						<th>
+							<button class="button" onmousedown="toggleCheckbox('cal2on');" ontouchstart="toggleCheckbox('cal2on');" onmouseup="toggleCheckbox('cal2off');" ontouchend="toggleCheckbox('cal2off');">RUN PUMP 2</button>
+						</th>
+						<th>
+							<button class="button" onmouseup="toggleCheckbox('save2');" ontouchend="toggleCheckbox('save2');">SAVE PUMP 2 CALIBRATION</button>
+						</th>
+					</tr>
+					<tr>
+						<th>
+							<button class="button" onmousedown="toggleCheckbox('cal3on');" ontouchstart="toggleCheckbox('cal3on');" onmouseup="toggleCheckbox('cal3off');" ontouchend="toggleCheckbox('cal3off');">RUN PUMP 3</button>
+						</th>
+						<th>
+							<button class="button" onmouseup="toggleCheckbox('save3');" ontouchend="toggleCheckbox('save3');">SAVE PUMP 3 CALIBRATION</button>
+						</th>
+					</tr>
+					<tr>
+						<th>
+							<button class="button" onmousedown="toggleCheckbox('cal4on');" ontouchstart="toggleCheckbox('cal4on');" onmouseup="toggleCheckbox('cal4off');" ontouchend="toggleCheckbox('cal4off');">RUN PUMP 4</button>
+						</th>
+						<th>
+							<button class="button" onmouseup="toggleCheckbox('save4');" ontouchend="toggleCheckbox('save4');">SAVE PUMP 4 CALIBRATION</button>
+						</th>
+					</tr>
+				</table>
     </div>
     <div id="Settings" class="tabcontent">
         <h3>Settings</h3>
@@ -205,24 +261,13 @@
                 <option value="14.00">(GMT +14:00) Line Islands, Tokelau</option>
             </select>
             <br>
-            Day Light Savings Time? <br>
-            <input type="radio" id="Yes" name="DST" value="1">
-            <label for="Yes">YES</label><br>
-            <input type="radio" id="No" name="DST" value="0">
-            <label for="No">NO</label><br>
-            <br>
-            Pump 1 Reservoir Volume (current value %pump1ContainerVolume%): <input type="number " name="pump1ContainerVolume" multiple><br>
-			<br>
-            Pump 2 Reservoir Volume (current value %pump2ContainerVolume%): <input type="number " name="pump2ContainerVolume" multiple><br>
-			<br>
-            Pump 3 Reservoir Volume (current value %pump3ContainerVolume%): <input type="number " name="pump3ContainerVolume" multiple><br>
-			<br>
-            Pump 4 Reservoir Volume (current value %pump4ContainerVolume%): <input type="number " name="pump4ContainerVolume" multiple><br>
-            <input type="submit" value="Submit" onclick="submitSettingMessage()">
-        </form><br>
+            Day Light Savings Time?
+			<select name="DST">
+				<option id="No" value="0">NO</option>
+				<option id="Yes" value="1">YES</option>
+			</select>
+            <input type="submit" value="Save time zone" onclick="submitSettingMessage()">
+        </form>
     </div>
-    <p>
 </body>
-<iframe name="hiddenFrame" width="0" height="0" border="0" style="display: none;"></iframe>
-
 </html>
