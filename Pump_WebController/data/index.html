@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <html>
 
 <head>
@@ -62,61 +63,69 @@
     <div id="Programs" class="tabcontent">
         <h3>Programs</h3>
         <script src="/javascript.js"></script>
-   
-        <p>Pump 1 Program: %pump1ProgStatus% </p> <br>
-        <form action="/getProgram" target="hiddenFrame">
-                     Enable Program <br>
-            <input type="radio" id="Yes" name="pump1ProgStatus" value="1">
-            <label for="Yes">YES</label><br>
-            <input type="radio" id="No" name="pump1ProgStatus" value="0">
-            <label for="No">NO</label><br>
-            Pump 1 Start Date and Time: <input type="datetime-local" name="pump1DateTime" multiple><br>
-            Pump 1 Dispensing Amount (mL) (current value %pump1DispensingAmount% mL): <input type="number " name="pump1DispensingAmount" multiple><br>
-            Pump 1 Schedule (Days) (Program runs every %pump1day% day): <input type="number " name="pump1day" multiple><br>
-            <input type="submit" value="Submit" onclick="submitProgramMessage()">
-        </form><br>
+   	<table>
 		
-		<p>Pump 2 Program: %pump2ProgStatus% </p> <br>
-        <form action="/getProgram" target="hiddenFrame">
-                     Enable Program <br>
-            <input type="radio" id="Yes" name="pump2ProgStatus" value="1">
-            <label for="Yes">YES</label><br>
-            <input type="radio" id="No" name="pump2ProgStatus" value="0">
-            <label for="No">NO</label><br>
-            Pump 2 Start Date and Time: <input type="datetime-local" name="pump2DateTime" multiple><br>
-            Pump 2 Dispensing Amount (mL) (current value %pump2DispensingAmount% mL): <input type="number " name="pump2DispensingAmount" multiple><br>
-            Pump 2 Schedule (Days) (Program runs every %pump2day% day): <input type="number " name="pump2day" multiple><br>
-            <input type="submit" value="Submit" onclick="submitProgramMessage()">
-        </form><br>
-		
-		
-		<p>Pump 3 Program: %pump3ProgStatus% </p> <br>
-        <form action="/getProgram" target="hiddenFrame">
-                     Enable Program <br>
-            <input type="radio" id="Yes" name="pump3ProgStatus" value="1">
-            <label for="Yes">YES</label><br>
-            <input type="radio" id="No" name="pump3ProgStatus" value="0">
-            <label for="No">NO</label><br>
-            Pump 3 Start Date and Time: <input type="datetime-local" name="pump3DateTime" multiple><br>
-            Pump 3 Dispensing Amount (mL) (current value %pump3DispensingAmount% mL): <input type="number " name="pump3DispensingAmount" multiple><br>
-            Pump 3 Schedule (Days) (Program runs every %pump3day% day): <input type="number " name="pump3day" multiple><br>
-            <input type="submit" value="Submit" onclick="submitProgramMessage()">
-        </form><br>
-		
-		
-		<p>Pump 4 Program: %pump4ProgStatus% </p> <br>
-        <form action="/getProgram" target="hiddenFrame">
-                     Enable Program <br>
-            <input type="radio" id="Yes" name="pump4ProgStatus" value="1">
-            <label for="Yes">YES</label><br>
-            <input type="radio" id="No" name="pump4ProgStatus" value="0">
-            <label for="No">NO</label><br>
-            Pump 4 Start Date and Time: <input type="datetime-local" name="pump4DateTime" multiple><br>
-            Pump 4 Dispensing Amount (mL) (current value %pump4DispensingAmount% mL): <input type="number " name="pump4DispensingAmount" multiple><br>
-            Pump 4 Schedule (Days) (Program runs every %pump4day% day): <input type="number " name="pump4day" multiple><br>
-            <input type="submit" value="Submit" onclick="submitProgramMessage()">
-        </form><br>
-		
+		  <tr>
+			<th>PUMP NUMBER</th>
+			<th>ENABLE</th>
+			<th>START TIME</th>
+			<th>DISPENSING AMOUNT in mL</th>
+			<th>FREQUENCY</th>
+			<th>SUBMIT</th>
+		  </tr>
+		  <tr>
+			<form action="/getProgram" target="hiddenFrame">  
+				<th>01</th>
+				<th>
+					%pump1ProgStatus%<input type="radio" id="Yes" name="pump1ProgStatus" value="1"><label for="Yes">YES</label>
+					<input type="radio" id="No" name="pump1ProgStatus" value="0"><label for="No">NO</label>
+				</th>
+				<th><input type="datetime-local" name="pump1DateTime" multiple></th>
+				<th>%pump1DispensingAmount%<input type="number " name="pump1DispensingAmount" multiple></th>
+				<th>%pump1day%<input type="number " name="pump1day" multiple></th>
+				<th><input type="submit" value="Submit" onclick="submitProgramMessage()"></th>
+			</form>	
+		  </tr>
+		  <tr>
+			<form action="/getProgram" target="hiddenFrame">  
+				<th>02</th>
+				<th>
+					%pump2ProgStatus%<input type="radio" id="Yes" name="pump2ProgStatus" value="1"><label for="Yes">YES</label>
+					<input type="radio" id="No" name="pump2ProgStatus" value="0"><label for="No">NO</label>
+				</th>
+				<th><input type="datetime-local" name="pump2DateTime" multiple></th>
+				<th>%pump2DispensingAmount%<input type="number " name="pump2DispensingAmount" multiple></th>
+				<th>%pump2day%<input type="number " name="pump2day" multiple></th>
+				<th><input type="submit" value="Submit" onclick="submitProgramMessage()"></th>
+			</form>	
+		  </tr>
+		  <tr>
+			<form action="/getProgram" target="hiddenFrame">  
+				<th>03</th>
+				<th>
+					%pump3ProgStatus%<input type="radio" id="Yes" name="pump3ProgStatus" value="1"><label for="Yes">YES</label>
+					<input type="radio" id="No" name="pump3ProgStatus" value="0"><label for="No">NO</label>
+				</th>
+				<th><input type="datetime-local" name="pump3DateTime" multiple></th>
+				<th>%pump3DispensingAmount%<input type="number " name="pump3DispensingAmount" multiple></th>
+				<th>%pump3day%<input type="number " name="pump3day" multiple></th>
+				<th><input type="submit" value="Submit" onclick="submitProgramMessage()"></th>
+			</form>	
+		  </tr>
+		  <tr>
+			<form action="/getProgram" target="hiddenFrame">  
+				<th>04</th>
+				<th>
+					%pump1ProgStatus%<input type="radio" id="Yes" name="pump4ProgStatus" value="1"><label for="Yes">YES</label>
+					<input type="radio" id="No" name="pump4ProgStatus" value="0"><label for="No">NO</label>
+				</th>
+				<th><input type="datetime-local" name="pump4DateTime" multiple></th>
+				<th>%pump4DispensingAmount%<input type="number " name="pump4DispensingAmount" multiple></th>
+				<th>%pump4day%<input type="number " name="pump4day" multiple></th>
+				<th><input type="submit" value="Submit" onclick="submitProgramMessage()"></th>
+			</form>	
+		  </tr>
+		</table>
     </div>
     <div id="ManualControl" class="tabcontent">
         <h3>Manual Control</h3>
