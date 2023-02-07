@@ -7,6 +7,11 @@
 //NOTES: IF AN EXTERNAL MEMORY IS USED, AS THE ORIGINAL PROJECT WANTS, YOU NEED TO DEFINE EXT_MEMORY (ACTUALLY NOT WORKING, HAVE TO BE DEBUGGED, IF YOU WANT TO DO IT UNCOMMENT NEXT CODE LINE)
 //#define EXT_MEMORY     //Enable external memory
 
+
+
+//NOTES: IF YOU WANT TO PRINT DEBUG STRINGS UN-COMMENT NEXT LINE)
+#define DEBUG //Enable debug print
+
 // Import required libraries
 #include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
@@ -21,14 +26,16 @@
 #include <RTClib.h>
 #include <ESP8266mDNS.h>
 #include <ArduinoOTA.h>
+#include <string.h>
 #include "pumpStruct.h"
 
 //Select which include is correct
 #ifdef EXT_MEMORY
   #include "Adafruit_FRAM_I2C.h"
 #else
-  #include <ESP_EEPROM.h>
-  #define EEPROM_SIZE 64
+  #include <EEPROM.h>
+  
+  #define EEPROM_SIZE 4096
 #endif
 
 // These define's must be placed at the beginning before #include "ESP8266TimerInterrupt.h"
@@ -57,6 +64,7 @@ pumpStruct pump1;
 pumpStruct pump2;
 pumpStruct pump3;
 pumpStruct pump4;
+
 pumpStruct tempholder;
 Settings settings;
 Settings tempSettings;
@@ -113,7 +121,7 @@ const char* PARAM_PUMP4AMOUNT = "pump4DispensingAmount";
 const char* PARAM_PUMP4DAY = "pump4day";
 const char* PARAM_PUMP4ENABLE = "pump4ProgStatus";
 
-
+char buffer[40];
 boolean commitSucc=false;
 boolean rtcWorking=false;
 
@@ -384,19 +392,19 @@ void setup() {
   Serial.println("Initialize System");
   initRTC();
   #ifdef EXT_MEMORY
-  if (fram.begin(0x50))
-  {  // you can stick the new i2c addr in here, e.g. begin(0x51);
-   Serial.println("Found I2C FRAM");
-  }
-  else
-  {
-   Serial.println("I2C FRAM not identified ... check your connections?\r\n");
-   Serial.println("Will continue in case this processor doesn't support repeated start\r\n");
-  }
+    if (fram.begin(0x50))
+    {  // you can stick the new i2c addr in here, e.g. begin(0x51);
+     Serial.println("Found I2C FRAM");
+    }
+    else
+    {
+     Serial.println("I2C FRAM not identified ... check your connections?\r\n");
+     Serial.println("Will continue in case this processor doesn't support repeated start\r\n");
+    }
   #else
-  pinMode(SDA_PIN,OUTPUT);
-  pinMode(SCL_PIN,OUTPUT);
-  EEPROM.begin(EEPROM_SIZE);
+    pinMode(SDA_PIN,OUTPUT);
+    pinMode(SCL_PIN,OUTPUT);
+    EEPROM.begin(EEPROM_SIZE);
   #endif
 
   pinMode(gpio_PUMP1, OUTPUT);
@@ -477,28 +485,57 @@ void setup() {
   }
   else
   {
-    Serial.println(F("Can't set ITimer correctly. Select another freq. or interval"));
+    Serial.println(F("Can't set ITimer correctly. Select another frequency or interval"));
   }
-  
+  pump1.valid_read = false; //                                                                     1byte
+  pump1.CAL_pumpmS=0; //time in mSecs to run pump 100 mL of fluid                                   2bytes
+  pump1.previousRuntime=0; //last time the pump ran in Epoch time (S)                     4bytes
+  pump1.nextRuntime=0; //next time the pump needs to run in Epoch time (S)                4bytes
+  pump1.dayDelay=10; //how many days until the pump runs again                                      2bytes
+  pump1.volumePump_mL = 1;  //                                                                    2bytes
+  pump1.totalvolumePumped_mL=0; //running total of all the liquid the pump has pumped (mL)        2bytes
+  pump1.containerVolume=0; //amount of in pump reservoir.                                         2bytes
+  pump1.motor_GPIO = 2;//                                                                           2bytes
+  pump1.programEnable = false;//                                                                   1byte
+  pump1.page = 0; //
+
+  EEPROM.put(100, pump1);
+  EEPROM.put(200, "DI");
+  EEPROM.put(300, "SCRITTURA");
+  EEPROM.put(400, "E LETTURA");
   #ifdef EXT_MEMORY
     fram.read((uint16_t)pump1.page, tempholder);
     fram.read((uint16_t)pump2.page, tempholder);
     fram.read((uint16_t)pump3.page, tempholder);
     fram.read((uint16_t)pump4.page, tempholder);
   #else
-    EEPROM.get((uint16_t)pump1.page, tempholder);
-    EEPROM.get((uint16_t)pump2.page, tempholder);
-    EEPROM.get((uint16_t)pump3.page, tempholder);
-    EEPROM.get((uint16_t)pump4.page, tempholder);
+    EEPROM.get(100, tempholder);
+    #ifdef DEBUG
+      //memcpy(buffer, &tempholder.motor_GPIO, sizeof(buffer));
+      itoa(tempholder.motor_GPIO, buffer, 10);
+      Serial.println("Values read on P1 setup are: ");
+      Serial.println(buffer);
+    #endif    
+    EEPROM.get(200, buffer);
+    #ifdef DEBUG
+      //memcpy(buffer, &pump2, sizeof(buffer));
+      Serial.println("Values read on P2 setup are: ");
+      Serial.println(buffer);
+    #endif
+    EEPROM.get(300, buffer);
+    #ifdef DEBUG
+      //memcpy(buffer, &pump3, sizeof(buffer));
+      Serial.println("Values read on P3 setup are: ");
+      Serial.println(buffer);
+    #endif
+    EEPROM.get(400, buffer);
+    #ifdef DEBUG
+      //memcpy(buffer, &pump4, sizeof(buffer));
+      Serial.println("Values read on P4 setup are: ");
+      Serial.println(buffer);
+    #endif
   #endif
   
-  Serial.println("Values read on setup are:");
-  Serial.println(pump1.page);
-  Serial.println(pump2.page);
-  Serial.println(pump3.page);
-  Serial.println(pump4.page);
-
-  /* DON'T KNOW WHAT IT DOES; USELESS?
   if (tempholder.valid_read)
   {
     pump1 = tempholder;
@@ -508,24 +545,13 @@ void setup() {
   {
     pump1.valid_read = true;
   }
-  */
+  
 
   #ifdef EXT_MEMORY
     fram.read((uint16_t)settings.page, tempSettings);
   #else
     EEPROM.get((uint16_t)settings.page,tempSettings);
   #endif
-  /* DON'T KNOW WHAT IT DOES; USELESS?  
-  if (tempSettings.valid_read)
-  {
-    settings = tempSettings;
-    tempSettings.valid_read = false;
-  }
-  else
-  {
-    settings.valid_read = true;
-  }
-  */
 
   //Hard set parameters that might get changed
   pump1.motor_GPIO = gpio_PUMP1;
@@ -784,10 +810,16 @@ void setup() {
     #else
       EEPROM.put((uint16_t)settings.page, settings);
       commitSucc = EEPROM.commit();
-      Serial.println((commitSucc) ? "OK001" : "F001");
       EEPROM.put((uint16_t)pump1.page, pump1);
       commitSucc = EEPROM.commit();
-      Serial.println((commitSucc) ? "OK002" : "F002");
+    #endif
+    #ifdef DEBUG
+      memcpy(buffer, &settings, sizeof(buffer));
+      Serial.println("settings DST ");
+      Serial.println(buffer);
+      memcpy(buffer, &pump1, sizeof(buffer));
+      Serial.println("P1 DST ");
+      Serial.println(buffer);
     #endif
 
     request->send(SPIFFS, "/index.html", String(), false, processor);
@@ -803,8 +835,11 @@ void setup() {
       else
       {
         temp += ":00";
-        Serial.println(temp.c_str());
-        //
+        #ifdef DEBUG
+          Serial.println("Request for time/date ");
+          Serial.println(temp.c_str());
+        #endif
+
         struct tm tm;
         time_t t;
         if (strptime(temp.c_str(), "%Y-%m-%dT%H:%M:%S", &tm) == NULL)
@@ -825,8 +860,12 @@ void setup() {
           #else
             EEPROM.put((uint16_t)pump1.page, pump1);
             commitSucc = EEPROM.commit();
-            Serial.println((commitSucc) ? "OK003" : "Commit failed");
           #endif        
+          #ifdef DEBUG
+            memcpy(buffer, &pump1, sizeof(buffer));
+            Serial.println("P1 next time run ");
+            Serial.println(buffer);
+          #endif
         }
       }
     }
@@ -844,8 +883,12 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump1.page, pump1);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "OK004" : "Commit failed");
         #endif        
+        #ifdef DEBUG
+          memcpy(buffer, &pump1, sizeof(buffer));
+          Serial.println("P1 volume mL ");
+          Serial.println(buffer);
+        #endif
       }
     }
     if (request->hasParam(PARAM_PUMP1DAY)) {
@@ -863,13 +906,20 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump1.page, pump1);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "OK005" : "Commit failed");       
+        #endif
+        #ifdef DEBUG
+          memcpy(buffer, &pump1, sizeof(buffer));
+          Serial.println("P1 dayDelay ");
+          Serial.println(buffer);
         #endif
       }
     }
     if (request->hasParam(PARAM_PUMP1ENABLE)) {
       String temp = request->getParam(PARAM_PUMP1ENABLE)->value();
-      Serial.println(temp);
+      #ifdef DEBUG
+        Serial.println("P1 dosing date");
+        Serial.println(temp);
+      #endif
 
       if (temp.length() == 0)
       {
@@ -883,7 +933,11 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump1.page, pump1);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "OK006" : "Commit failed");
+        #endif
+        #ifdef DEBUG
+          memcpy(buffer, &pump1, sizeof(buffer));
+          Serial.println("P1 enable ");
+          Serial.println(buffer);
         #endif
       }
     }
@@ -918,8 +972,12 @@ void setup() {
           #else
             EEPROM.put((uint16_t)pump2.page, pump2);
             commitSucc = EEPROM.commit();
-            Serial.println((commitSucc) ? "OK007" : "Commit failed");
           #endif        
+          #ifdef DEBUG
+          memcpy(buffer, &pump2, sizeof(buffer));
+          Serial.println("P2 nextRuntime ");
+          Serial.println(buffer);
+          #endif
         }
       }
     }
@@ -937,8 +995,12 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump2.page, pump2);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "OK008" : "Commit failed");
         #endif        
+        #ifdef DEBUG
+          memcpy(buffer, &pump2, sizeof(buffer));
+          Serial.println("P2 volume pump ");
+          Serial.println(buffer);
+        #endif
       }
     }
     if (request->hasParam(PARAM_PUMP2DAY)) {
@@ -956,7 +1018,11 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump2.page, pump2);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "OK009" : "Commit failed");       
+        #endif
+        #ifdef DEBUG
+          memcpy(buffer, &pump2, sizeof(buffer));
+          Serial.println("P2 dayDelay ");
+          Serial.println(buffer);
         #endif
       }
     }
@@ -976,7 +1042,11 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump2.page, pump2);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "OK010" : "Commit failed");
+        #endif
+        #ifdef DEBUG
+          memcpy(buffer, &pump2, sizeof(buffer));
+          Serial.println("P2 enable ");
+          Serial.println(buffer);
         #endif
       }
     }
@@ -1011,8 +1081,12 @@ void setup() {
           #else
             EEPROM.put((uint16_t)pump3.page, pump3);
             commitSucc = EEPROM.commit();
-            Serial.println((commitSucc) ? "OK011" : "Commit failed");
           #endif        
+          #ifdef DEBUG
+            memcpy(buffer, &pump3, sizeof(buffer));
+            Serial.println("P3 next time run ");
+            Serial.println(buffer);
+          #endif
         }
       }
     }
@@ -1030,8 +1104,12 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump3.page, pump3);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "OK012" : "Commit failed");
         #endif        
+        #ifdef DEBUG
+          memcpy(buffer, &pump3, sizeof(buffer));
+          Serial.println("P3 pump volume ");
+          Serial.println(buffer);
+        #endif
       }
     }
     if (request->hasParam(PARAM_PUMP3DAY)) {
@@ -1049,7 +1127,11 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump3.page, pump3);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "OK013" : "Commit failed");       
+        #endif
+        #ifdef DEBUG
+          memcpy(buffer, &pump3, sizeof(buffer));
+          Serial.println("P3 dayDelay ");
+          Serial.println(buffer);
         #endif
       }
     }
@@ -1069,7 +1151,11 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump3.page, pump3);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "OK014" : "Commit failed");
+        #endif
+        #ifdef DEBUG
+          memcpy(buffer, &pump3, sizeof(buffer));
+          Serial.println("P3 enable ");
+          Serial.println(buffer);
         #endif
       }
     }
@@ -1104,8 +1190,12 @@ void setup() {
           #else
             EEPROM.put((uint16_t)pump4.page, pump4);
             commitSucc = EEPROM.commit();
-            Serial.println((commitSucc) ? "OK015" : "Commit failed");
           #endif        
+          #ifdef DEBUG
+            memcpy(buffer, &pump4, sizeof(buffer));
+            Serial.println("P5 next time run ");
+            Serial.println(buffer);
+          #endif
         }
       }
     }
@@ -1123,8 +1213,12 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump4.page, pump4);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "OK016" : "Commit failed");
         #endif        
+        #ifdef DEBUG
+            memcpy(buffer, &pump4, sizeof(buffer));
+            Serial.println("P4 volume pump ");
+            Serial.println(buffer);
+        #endif
       }
     }
     if (request->hasParam(PARAM_PUMP4DAY)) {
@@ -1142,7 +1236,11 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump4.page, pump4);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "OK017" : "Commit failed");       
+        #endif
+        #ifdef DEBUG
+            memcpy(buffer, &pump4, sizeof(buffer));
+            Serial.println("P4 dayDelay ");
+            Serial.println(buffer);
         #endif
       }
     }
@@ -1162,7 +1260,11 @@ void setup() {
         #else
           EEPROM.put((uint16_t)pump1.page, pump4);
           commitSucc = EEPROM.commit();
-          Serial.println((commitSucc) ? "OK018" : "Commit failed");
+        #endif
+        #ifdef DEBUG
+            memcpy(buffer, &pump4, sizeof(buffer));
+            Serial.println("P4 enable ");
+            Serial.println(buffer);
         #endif
       }
     }
@@ -1223,15 +1325,13 @@ void loop() {
     }   
   }
 
-//Serial.println(pump1.nextRuntime);
-//Serial.println(epochTime_Estimate);
-  checkPump(pump1);
-  checkPump(pump2);
-  checkPump(pump3);
-  checkPump(pump4);
+  checkPump(pump1, "1");
+  checkPump(pump2, "2");
+  checkPump(pump3, "3");
+  checkPump(pump4, "4");
 }
 
-void checkPump(pumpStruct pump)
+void checkPump(pumpStruct pump, const char pumpn[1])
 {
   if (pump.nextRuntime  ==  epochTime_Estimate && pump.programEnable == true && pump.containerVolume > 0)
   {
@@ -1245,7 +1345,11 @@ void checkPump(pumpStruct pump)
     #else
       EEPROM.put((uint16_t)pump.page, pump);
       commitSucc = EEPROM.commit();
-      Serial.println((commitSucc) ? "OK019" : "Commit failed");
+    #endif
+    #ifdef DEBUG
+      memcpy(buffer, &pump, sizeof(buffer));
+      Serial.println("Pump page ");
+      Serial.println(buffer);
     #endif
     delay(round((pump.volumePump_mL * pump.CAL_pumpmS) / settings.calibrationVolumeL));
     Serial.print(round((pump.volumePump_mL * pump.CAL_pumpmS) / settings.calibrationVolumeL));
@@ -1255,12 +1359,11 @@ void checkPump(pumpStruct pump)
   else if ((pump.nextRuntime  < epochTime_Estimate) && (pump.programEnable == true))
   {
     pump.nextRuntime = pump.nextRuntime + (86400*pump.dayDelay);
-/*    #ifdef EXT_MEMORY    
-      fram.write((uint16_t)pump.page, pump);
-    #else
-      EEPROM.put((uint16_t)pump.page, pump);
-      commitSucc = EEPROM.commit();
-      Serial.println((commitSucc) ? "OK020" : "Commit failed");
-    #endif    */
   }
+  #ifdef DEBUG_1
+      memcpy(buffer, &pump, sizeof(buffer));
+      Serial.println("check pump ");
+      Serial.println(pumpn);
+      Serial.println(buffer);
+  #endif
 }
