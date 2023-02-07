@@ -29,9 +29,6 @@
        elmnt.style.backgroundColor = color;
    };
 
-
-
-
    if (!!window.EventSource) {
        var source = new EventSource('/events');
 
@@ -54,12 +51,30 @@
            document.getElementById("currentDatetime").innerHTML = dateObject.toLocaleString("en-US", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
        }, false);
 
-          source.addEventListener('pump1nextDatetime', function(e) {
+       source.addEventListener('pump1nextDatetime', function(e) {
            milliseconds = e.data * 1000 // 1575909015000
            dateObject = new Date(milliseconds)
            document.getElementById("pump1nextDatetime").innerHTML = "Pump 1 next active: " + dateObject.toLocaleString("en-US", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
        }, false);
-
+       
+       source.addEventListener('pump2nextDatetime', function(e) {
+           milliseconds = e.data * 1000 
+           dateObject = new Date(milliseconds)
+           document.getElementById("pump2nextDatetime").innerHTML = "Pump 2 next active: " + dateObject.toLocaleString("en-US", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
+       }, false);
+       
+       source.addEventListener('pump3nextDatetime', function(e) {
+           milliseconds = e.data * 1000
+           dateObject = new Date(milliseconds)
+           document.getElementById("pump3nextDatetime").innerHTML = "Pump 3 next active: " + dateObject.toLocaleString("en-US", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
+       }, false);
+       
+       source.addEventListener('pump4nextDatetime', function(e) {
+           milliseconds = e.data * 1000
+           dateObject = new Date(milliseconds)
+           document.getElementById("pump4nextDatetime").innerHTML = "Pump 4 next active: " + dateObject.toLocaleString("en-US", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
+       }, false);
+      
    }
 
 
@@ -68,11 +83,26 @@
 
 
    function submitSettingMessage() {
-       alert("Saved Setting");
+       alert("Time zone settings saved");
        window.location.reload();
    };
 
-   function submitProgramMessage() {
-       alert("Saved Program");
+   function submitProgramMessageP01() {
+       alert("Pump 1 program saved");
+       window.location.reload();
+   };
+
+   function submitProgramMessageP02() {
+       alert("Pump 2 program saved");
+       window.location.reload();
+   };
+
+   function submitProgramMessageP03() {
+       alert("Pump 3 program saved");
+       window.location.reload();
+   };
+
+   function submitProgramMessageP04() {
+       alert("Pump 4 program saved");
        window.location.reload();
    };
