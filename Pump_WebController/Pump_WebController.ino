@@ -59,11 +59,15 @@
 const char* ssid = "Chi legge puzza";
 const char* password = "T3QU1Puzz4!";
 
+=======
+>>>>>>> origin/wifimanager
 // Set PUMP GPIO
 const int gpio_PUMP1 = 12;
 const int gpio_PUMP2 = 13;
 const int gpio_PUMP3 = 14;
 const int gpio_PUMP4 = 15;
+const int pinReset = 16;
+const int pinButton = 0;
 
 pumpStruct pump1;
 pumpStruct pump2;
