@@ -50,6 +50,11 @@
 #define SDA_PIN 4
 #define SCL_PIN 5
 
+#define P1MEMADD 100
+#define P2MEMADD 100
+#define P3MEMADD 100
+#define P4MEMADD 100
+
 // Replace with your network credentials
 const char* ssid = "Chi legge puzza";
 const char* password = "T3QU1Puzz4!";
@@ -487,77 +492,17 @@ void setup() {
   {
     Serial.println(F("Can't set ITimer correctly. Select another frequency or interval"));
   }
-  pump1.valid_read = false; //                                                                     1byte
-  pump1.CAL_pumpmS=0; //time in mSecs to run pump 100 mL of fluid                                   2bytes
-  pump1.previousRuntime=0; //last time the pump ran in Epoch time (S)                     4bytes
-  pump1.nextRuntime=0; //next time the pump needs to run in Epoch time (S)                4bytes
-  pump1.dayDelay=10; //how many days until the pump runs again                                      2bytes
-  pump1.volumePump_mL = 1;  //                                                                    2bytes
-  pump1.totalvolumePumped_mL=0; //running total of all the liquid the pump has pumped (mL)        2bytes
-  pump1.containerVolume=0; //amount of in pump reservoir.                                         2bytes
-  pump1.motor_GPIO = 2;//                                                                           2bytes
-  pump1.programEnable = false;//                                                                   1byte
-  pump1.page = 0; //
-
-  EEPROM.put(100, pump1);
-  EEPROM.put(200, "DI");
-  EEPROM.put(300, "SCRITTURA");
-  EEPROM.put(400, "E LETTURA");
-  #ifdef EXT_MEMORY
-    fram.read((uint16_t)pump1.page, tempholder);
-    fram.read((uint16_t)pump2.page, tempholder);
-    fram.read((uint16_t)pump3.page, tempholder);
-    fram.read((uint16_t)pump4.page, tempholder);
-  #else
-    EEPROM.get(100, tempholder);
-    #ifdef DEBUG
-      //memcpy(buffer, &tempholder.motor_GPIO, sizeof(buffer));
-      itoa(tempholder.motor_GPIO, buffer, 10);
-      Serial.println("Values read on P1 setup are: ");
-      Serial.println(buffer);
-    #endif    
-    EEPROM.get(200, buffer);
-    #ifdef DEBUG
-      //memcpy(buffer, &pump2, sizeof(buffer));
-      Serial.println("Values read on P2 setup are: ");
-      Serial.println(buffer);
-    #endif
-    EEPROM.get(300, buffer);
-    #ifdef DEBUG
-      //memcpy(buffer, &pump3, sizeof(buffer));
-      Serial.println("Values read on P3 setup are: ");
-      Serial.println(buffer);
-    #endif
-    EEPROM.get(400, buffer);
-    #ifdef DEBUG
-      //memcpy(buffer, &pump4, sizeof(buffer));
-      Serial.println("Values read on P4 setup are: ");
-      Serial.println(buffer);
-    #endif
-  #endif
   
-  if (tempholder.valid_read)
-  {
-    pump1 = tempholder;
-    tempholder.valid_read = false;
-  }
-  else
-  {
-    pump1.valid_read = true;
-  }
+  pump1 = loadPump(P1MEMADD);
+  pump2 = loadPump(P2MEMADD);
+  pump3 = loadPump(P3MEMADD);
+  pump4 = loadPump(P4MEMADD);
   
-
   #ifdef EXT_MEMORY
     fram.read((uint16_t)settings.page, tempSettings);
   #else
     EEPROM.get((uint16_t)settings.page,tempSettings);
   #endif
-
-  //Hard set parameters that might get changed
-  pump1.motor_GPIO = gpio_PUMP1;
-  pump2.motor_GPIO = gpio_PUMP2;
-  pump3.motor_GPIO = gpio_PUMP3;
-  pump4.motor_GPIO = gpio_PUMP4;
 
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest * request)
@@ -1360,10 +1305,45 @@ void checkPump(pumpStruct pump, const char pumpn[1])
   {
     pump.nextRuntime = pump.nextRuntime + (86400*pump.dayDelay);
   }
-  #ifdef DEBUG_1
-      memcpy(buffer, &pump, sizeof(buffer));
-      Serial.println("check pump ");
-      Serial.println(pumpn);
-      Serial.println(buffer);
+}
+
+pumpStruct loadPump(const int address)
+{
+  pumpStruct pump;
+  pump.valid_read = false;
+  
+  #ifdef EXT_MEMORY
+    fram.read(address, pump);
+  #else
+    EEPROM.get(address, pump);
   #endif
+  
+  #ifdef DEBUG
+    itoa(pump.valid_read, buffer, 10);
+    Serial.println("Values read on P1 setup are: ");
+    Serial.println(buffer);
+  #endif    
+  
+  if (tempholder.valid_read)
+  {
+    
+    pump1 = tempholder;
+    tempholder.valid_read = false;
+  }
+  else
+  {
+    pump.valid_read = true;
+    EEPROM.put(P1MEMADD, pump1);
+  }
+  
+  pump.CAL_pumpmS=0; //time in mSecs to run pump 100 mL of fluid                                   2bytes
+  pump.previousRuntime=0; //last time the pump ran in Epoch time (S)                     4bytes
+  pump.nextRuntime=0; //next time the pump needs to run in Epoch time (S)                4bytes
+  pump.dayDelay=10; //how many days until the pump runs again                                      2bytes
+  pump.volumePump_mL = 1;  //                                                                    2bytes
+  pump.totalvolumePumped_mL=0; //running total of all the liquid the pump has pumped (mL)        2bytes
+  pump.containerVolume=0; //amount of in pump reservoir.                                         2bytes
+  pump.motor_GPIO = 2;//                                                                           2bytes
+  pump.programEnable = false;//                                                                   1byte
+  pump.page = 0; //
 }
