@@ -7,15 +7,12 @@
 //NOTES: IF AN EXTERNAL MEMORY IS USED, AS THE ORIGINAL PROJECT WANTS, YOU NEED TO DEFINE EXT_MEMORY (ACTUALLY NOT WORKING, HAVE TO BE DEBUGGED, IF YOU WANT TO DO IT UNCOMMENT NEXT CODE LINE)
 //#define EXT_MEMORY     //Enable external memory
 
-
-
 //NOTES: IF YOU WANT TO PRINT DEBUG STRINGS UN-COMMENT NEXT LINE)
 #define DEBUG //Enable debug print
 
 // Import required libraries
 #include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
-#include <ESPAsyncWebSrv.h>
 #include <Hash.h>
 #include <FS.h>
 #include <NTPClient.h>
@@ -38,6 +35,13 @@
   #define EEPROM_SIZE 4096
 #endif
 
+//WiFiManager, respect this order
+#include <DNSServer.h>
+#include <ESP8266WebServer.h>
+#include "WiFiManager.h"        //https://github.com/tzapu/WiFiManager/archive/refs/tags/v2.0.15-rc.1.zip
+#define WEBSERVER_H
+#include "ESPAsyncWebSrv.h"
+
 // These define's must be placed at the beginning before #include "ESP8266TimerInterrupt.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
@@ -50,6 +54,7 @@
 #define SDA_PIN 4
 #define SCL_PIN 5
 
+<<<<<<< HEAD
 #define P1MEMADD 100
 #define P2MEMADD 200
 #define P3MEMADD 300
@@ -393,6 +398,12 @@ String processor(const String& var)
   }
 }
 
+void configModeCallback (WiFiManager *myWiFiManager) {
+  Serial.println("Entered config mode");
+  Serial.println(WiFi.softAPIP());
+  //if you used auto generated SSID, print it
+  Serial.println(myWiFiManager->getConfigPortalSSID());
+}
 
 void setup() {
   // Serial port for debugging purposes
@@ -424,13 +435,18 @@ void setup() {
   pinMode(gpio_PUMP4, OUTPUT);
   digitalWrite(gpio_PUMP4, LOW);  
 
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    Serial.println("Connection Failed! Rebooting...");
-    delay(5000);
-    ESP.restart();
-  }
+  WiFiManager wifiManager;
+  wifiManager.setAPCallback(configModeCallback);
+  WiFi.hostname("MicroDoser");
+
+  if(!wifiManager.autoConnect("MicroDoser")) {
+    Serial.println("Connection Timout");
+    //reset and try again, or maybe put it to deep sleep
+    ESP.reset();
+    delay(1000);
+  } 
+
+  Serial.println(F("WIFIManager connected!"));
 
   // Port defaults to 8266
   // ArduinoOTA.setPort(8266);
@@ -459,10 +475,7 @@ void setup() {
     else if (error == OTA_END_ERROR) Serial.println("End Failed");
   });
   ArduinoOTA.begin();
-  Serial.println("Ready");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-  
+
   // Initialize SPIFFS
   if (!SPIFFS.begin())
   {
@@ -1233,8 +1246,54 @@ void setup() {
   server.begin();
 }
 
+void factoryReset()
+{
+    if (false == digitalRead(pinButton))
+    {
+        Serial.println("Hold the button to reset to factory defaults...");
+        bool cancel = false;
+        for (int iter=0; iter<30; iter++)
+        {
+            digitalWrite(pinReset, HIGH);
+            delay(100);
+            if (true == digitalRead(pinButton))
+            {
+                cancel = true;
+                break;
+            }
+            digitalWrite(pinReset, LOW);
+            delay(100);
+            if (true == digitalRead(pinButton))
+            {
+                cancel = true;
+                break;
+            }
+        }
+        if (false == digitalRead(pinButton) && !cancel)
+        {
+            digitalWrite(pinReset, HIGH);
+            Serial.println("Disconnecting...");
+            WiFi.disconnect();
+
+            Serial.println("Restarting...");
+            //WIP: Beed to clean stored values in eeprom, not format the whole fs.
+            //SPIFFS.format();
+            ESP.restart();
+        }
+        else
+        {
+            // Cancel reset to factory defaults
+            Serial.println("Reset to factory defaults cancelled.");
+            digitalWrite(pinReset, LOW);
+        }
+    }
+}
+
 void loop() {
   ArduinoOTA.handle();
+
+  // Allow MDNS processing
+  MDNS.update();
 
   if (ticks > 0)
   {
@@ -1277,6 +1336,9 @@ void loop() {
   checkPump(pump2, "2");
   checkPump(pump3, "3");
   checkPump(pump4, "4");
+
+  //WIP: Implement Reset to Defaults
+  factoryReset();
 }
 
 void checkPump(pumpStruct pump, const char pumpn[1])
