@@ -51,9 +51,9 @@
 #define SCL_PIN 5
 
 #define P1MEMADD 100
-#define P2MEMADD 100
-#define P3MEMADD 100
-#define P4MEMADD 100
+#define P2MEMADD 200
+#define P3MEMADD 300
+#define P4MEMADD 400
 
 // Replace with your network credentials
 const char* ssid = "Chi legge puzza";
@@ -70,7 +70,6 @@ pumpStruct pump2;
 pumpStruct pump3;
 pumpStruct pump4;
 
-pumpStruct tempholder;
 Settings settings;
 Settings tempSettings;
 // Init ESP8266 timer 0
@@ -493,10 +492,10 @@ void setup() {
     Serial.println(F("Can't set ITimer correctly. Select another frequency or interval"));
   }
   
-  pump1 = loadPump(P1MEMADD);
-  pump2 = loadPump(P2MEMADD);
-  pump3 = loadPump(P3MEMADD);
-  pump4 = loadPump(P4MEMADD);
+  pump1 = loadPump(P1MEMADD,gpio_PUMP1);
+  pump2 = loadPump(P2MEMADD,gpio_PUMP2);
+  pump3 = loadPump(P3MEMADD,gpio_PUMP3);
+  pump4 = loadPump(P4MEMADD,gpio_PUMP4);
   
   #ifdef EXT_MEMORY
     fram.read((uint16_t)settings.page, tempSettings);
@@ -1307,7 +1306,7 @@ void checkPump(pumpStruct pump, const char pumpn[1])
   }
 }
 
-pumpStruct loadPump(const int address)
+pumpStruct loadPump(const int address, int motor)
 {
   pumpStruct pump;
   pump.valid_read = false;
@@ -1319,31 +1318,77 @@ pumpStruct loadPump(const int address)
   #endif
   
   #ifdef DEBUG
-    itoa(pump.valid_read, buffer, 10);
-    Serial.println("Values read on P1 setup are: ");
+    itoa(address/100, buffer, 10);
+    Serial.println("Pump number");
     Serial.println(buffer);
   #endif    
-  
-  if (tempholder.valid_read)
+
+  if(pump.valid_read == true)
   {
+    #ifdef DEBUG
+      Serial.println("Values read correctly");
+      
+      Serial.println("Calibration in mS");
+      itoa(pump.CAL_pumpmS, buffer, 10);
+      Serial.println(buffer);
+
+      Serial.println("Last time ran");
+      itoa(pump.previousRuntime, buffer, 10);
+      Serial.println(buffer);
+
+      Serial.println("Next time run");
+      itoa(pump.nextRuntime, buffer, 10);
+      Serial.println(buffer);
+
+      Serial.println("Delay in days");
+      itoa(pump.dayDelay, buffer, 10);
+      Serial.println(buffer);
+
+      Serial.println("Pump volume");
+      itoa(pump.volumePump_mL, buffer, 10);
+      Serial.println(buffer);
+
+      Serial.println("Total volume pumped");
+      itoa(pump.totalvolumePumped_mL, buffer, 10);
+      Serial.println(buffer);
+
+      Serial.println("Container volume");
+      itoa(pump.containerVolume, buffer, 10);
+      Serial.println(buffer);
+
+      Serial.println("Motor GPIO");
+      itoa(pump.motor_GPIO, buffer, 10);
+      Serial.println(buffer);
     
-    pump1 = tempholder;
-    tempholder.valid_read = false;
+      Serial.println("Program enabled");
+      itoa(pump.programEnable, buffer, 10);
+      Serial.println(buffer);
+    #endif
   }
   else
   {
+    #ifdef DEBUG
+      Serial.println("Values not present or wrong memory sector, resetting values");
+    #endif
+    
+    pump.CAL_pumpmS=0;            //time in mSecs to run pump 100 mL of fluid                    2bytes
+    pump.previousRuntime=0;       //last time the pump ran in Epoch time (S)                     4bytes
+    pump.nextRuntime=0;           //next time the pump needs to run in Epoch time (S)            4bytes
+    pump.dayDelay=1;              //how many days until the pump runs again                      2bytes
+    pump.volumePump_mL = 1;       //                                                             2bytes
+    pump.totalvolumePumped_mL=0;  //running total of all the liquid the pump has pumped (mL)     2bytes
+    pump.containerVolume=0;       //amount of in pump reservoir.                                 2bytes
+    pump.motor_GPIO = motor;      //                                                             2bytes
+    pump.programEnable = false;   //                                                             1byte
+    pump.page = 0;
     pump.valid_read = true;
-    EEPROM.put(P1MEMADD, pump1);
+    
+    EEPROM.put(address, pump);
+    commitSucc = EEPROM.commit();
+    #ifdef DEBUG
+      Serial.println("Writing new values on EEPROM");
+      Serial.println(commitSucc);
+    #endif
   }
-  
-  pump.CAL_pumpmS=0; //time in mSecs to run pump 100 mL of fluid                                   2bytes
-  pump.previousRuntime=0; //last time the pump ran in Epoch time (S)                     4bytes
-  pump.nextRuntime=0; //next time the pump needs to run in Epoch time (S)                4bytes
-  pump.dayDelay=10; //how many days until the pump runs again                                      2bytes
-  pump.volumePump_mL = 1;  //                                                                    2bytes
-  pump.totalvolumePumped_mL=0; //running total of all the liquid the pump has pumped (mL)        2bytes
-  pump.containerVolume=0; //amount of in pump reservoir.                                         2bytes
-  pump.motor_GPIO = 2;//                                                                           2bytes
-  pump.programEnable = false;//                                                                   1byte
-  pump.page = 0; //
+  return pump;
 }
