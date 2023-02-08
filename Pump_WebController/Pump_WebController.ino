@@ -59,6 +59,8 @@ const int gpio_PUMP1 = 12;
 const int gpio_PUMP2 = 13;
 const int gpio_PUMP3 = 14;
 const int gpio_PUMP4 = 15;
+const int pinReset = 16;
+const int pinButton = 0;
 
 pumpStruct pump1;
 pumpStruct pump2;
@@ -1293,6 +1295,49 @@ void setup() {
   server.begin();
 }
 
+void factoryReset()
+{
+    if (false == digitalRead(pinButton))
+    {
+        Serial.println("Hold the button to reset to factory defaults...");
+        bool cancel = false;
+        for (int iter=0; iter<30; iter++)
+        {
+            digitalWrite(pinReset, HIGH);
+            delay(100);
+            if (true == digitalRead(pinButton))
+            {
+                cancel = true;
+                break;
+            }
+            digitalWrite(pinReset, LOW);
+            delay(100);
+            if (true == digitalRead(pinButton))
+            {
+                cancel = true;
+                break;
+            }
+        }
+        if (false == digitalRead(pinButton) && !cancel)
+        {
+            digitalWrite(pinReset, HIGH);
+            Serial.println("Disconnecting...");
+            WiFi.disconnect();
+
+            Serial.println("Restarting...");
+            //WIP: Beed to clean stored values in eeprom, not format the whole fs.
+            //SPIFFS.format();
+            ESP.restart();
+        }
+        else
+        {
+            // Cancel reset to factory defaults
+            Serial.println("Reset to factory defaults cancelled.");
+            digitalWrite(pinReset, LOW);
+        }
+    }
+}
+
 void loop() {
   ArduinoOTA.handle();
 
@@ -1340,6 +1385,9 @@ void loop() {
   checkPump(pump2, "2");
   checkPump(pump3, "3");
   checkPump(pump4, "4");
+
+  //WIP: Implement Reset to Defaults
+  factoryReset();
 }
 
 void checkPump(pumpStruct pump, const char pumpn[1])
