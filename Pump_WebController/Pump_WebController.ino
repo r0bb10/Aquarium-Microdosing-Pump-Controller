@@ -15,7 +15,6 @@
 // Import required libraries
 #include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
-#include <ESPAsyncWebSrv.h>
 #include <Hash.h>
 #include <FS.h>
 #include <NTPClient.h>
@@ -38,6 +37,13 @@
   #define EEPROM_SIZE 4096
 #endif
 
+//WiFiManager, respect this order
+#include <DNSServer.h>
+#include <ESP8266WebServer.h>
+#include "WiFiManager.h"        //https://github.com/tzapu/WiFiManager/archive/refs/tags/v2.0.15-rc.1.zip
+#define WEBSERVER_H
+#include "ESPAsyncWebSrv.h"
+
 // These define's must be placed at the beginning before #include "ESP8266TimerInterrupt.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
@@ -49,10 +55,6 @@
 
 #define SDA_PIN 4
 #define SCL_PIN 5
-
-// Replace with your network credentials
-const char* ssid = "Chi legge puzza";
-const char* password = "T3QU1Puzz4!";
 
 // Set PUMP GPIO
 const int gpio_PUMP1 = 12;
@@ -385,6 +387,12 @@ String processor(const String& var)
   }
 }
 
+void configModeCallback (WiFiManager *myWiFiManager) {
+  Serial.println("Entered config mode");
+  Serial.println(WiFi.softAPIP());
+  //if you used auto generated SSID, print it
+  Serial.println(myWiFiManager->getConfigPortalSSID());
+}
 
 void setup() {
   // Serial port for debugging purposes
@@ -416,13 +424,19 @@ void setup() {
   pinMode(gpio_PUMP4, OUTPUT);
   digitalWrite(gpio_PUMP4, LOW);  
 
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    Serial.println("Connection Failed! Rebooting...");
-    delay(5000);
-    ESP.restart();
-  }
+  WiFiManager wifiManager;
+  wifiManager.setAPCallback(configModeCallback);
+
+  if(!wifiManager.autoConnect("MicroDoser")) {
+    Serial.println("Connection Timout");
+    //reset and try again, or maybe put it to deep sleep
+    ESP.reset();
+    delay(1000);
+  } 
+
+  Serial.println(F("WIFIManager connected!"));
+  Serial.print(F("IP --> "));
+  Serial.println(WiFi.localIP());
 
   // Port defaults to 8266
   // ArduinoOTA.setPort(8266);
