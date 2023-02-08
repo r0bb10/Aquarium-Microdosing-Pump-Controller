@@ -7,8 +7,6 @@
 //NOTES: IF AN EXTERNAL MEMORY IS USED, AS THE ORIGINAL PROJECT WANTS, YOU NEED TO DEFINE EXT_MEMORY (ACTUALLY NOT WORKING, HAVE TO BE DEBUGGED, IF YOU WANT TO DO IT UNCOMMENT NEXT CODE LINE)
 //#define EXT_MEMORY     //Enable external memory
 
-
-
 //NOTES: IF YOU WANT TO PRINT DEBUG STRINGS UN-COMMENT NEXT LINE)
 #define DEBUG //Enable debug print
 
@@ -426,6 +424,7 @@ void setup() {
 
   WiFiManager wifiManager;
   wifiManager.setAPCallback(configModeCallback);
+  WiFi.hostname("MicroDoser");
 
   if(!wifiManager.autoConnect("MicroDoser")) {
     Serial.println("Connection Timout");
@@ -435,8 +434,6 @@ void setup() {
   } 
 
   Serial.println(F("WIFIManager connected!"));
-  Serial.print(F("IP --> "));
-  Serial.println(WiFi.localIP());
 
   // Port defaults to 8266
   // ArduinoOTA.setPort(8266);
@@ -465,10 +462,7 @@ void setup() {
     else if (error == OTA_END_ERROR) Serial.println("End Failed");
   });
   ArduinoOTA.begin();
-  Serial.println("Ready");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-  
+
   // Initialize SPIFFS
   if (!SPIFFS.begin())
   {
@@ -1301,6 +1295,9 @@ void setup() {
 
 void loop() {
   ArduinoOTA.handle();
+
+  // Allow MDNS processing
+  MDNS.update();
 
   if (ticks > 0)
   {
