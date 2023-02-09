@@ -2,13 +2,16 @@
 //BASED ON ORIGINAL CODE BY WILLIAMG42
 //ON THE FORK OF THE MASTER OF EVERYTHING R0BB10
 
-#define VERSION "0.1B"
+#define VERSION "0.1D"
 
 //NOTES: IF AN EXTERNAL MEMORY IS USED, AS THE ORIGINAL PROJECT WANTS, YOU NEED TO DEFINE EXT_MEMORY (ACTUALLY NOT WORKING, HAVE TO BE DEBUGGED, IF YOU WANT TO DO IT UNCOMMENT NEXT CODE LINE)
 //#define EXT_MEMORY     //Enable external memory
 
 //NOTES: IF YOU WANT TO PRINT DEBUG STRINGS UN-COMMENT NEXT LINE)
 #define DEBUG //Enable debug print
+
+//NOTES: IF YOU WANT TO UNLOCK POURTH PUMP (GPIO15 DOESN'T WORK PROPERLY NOW) UNCOMMENT NEXT CODE LINE
+//#define P4_DEF //Enable debug print
 
 // Import required libraries
 #include <ESP8266WiFi.h>
@@ -54,18 +57,21 @@
 #define SDA_PIN 4
 #define SCL_PIN 5
 
-<<<<<<< HEAD
+//<<<<<<< HEAD
+//=======
+//>>>>>>> origin/wifimanager
+
 #define P1MEMADD 100
 #define P2MEMADD 200
 #define P3MEMADD 300
 #define P4MEMADD 400
+#define SETMEMADD 1000
 
 // Replace with your network credentials
 const char* ssid = "Chi legge puzza";
 const char* password = "T3QU1Puzz4!";
 
-=======
->>>>>>> origin/wifimanager
+
 // Set PUMP GPIO
 const int gpio_PUMP1 = 12;
 const int gpio_PUMP2 = 13;
@@ -103,7 +109,6 @@ unsigned long stopMillis = 0;
 
 
 const char* PARAM_DST = "DST";
-const char* PARAM_CALVOLUME = "calibrationVolume";
 const char* PARAM_TIMEZONEOFFSET = "timezoneOffset";
 
 const char* PARAM_PUMP1CONTAINERVOLUME = "pump1ContainerVolume";
@@ -112,6 +117,7 @@ const char* PARAM_PUMP1DAYDELAY = "pump1DayDelay";
 const char* PARAM_PUMP1AMOUNT = "pump1DispensingAmount";
 const char* PARAM_PUMP1DAY = "pump1day";
 const char* PARAM_PUMP1ENABLE = "pump1ProgStatus";
+const char* PARAM_PUMP1CALVOLUME = "pump1calibrationVolume";
 
 const char* PARAM_PUMP2CONTAINERVOLUME = "pump2ContainerVolume";
 const char* PARAM_PUMP2DATETIME = "pump2DateTime";
@@ -119,6 +125,7 @@ const char* PARAM_PUMP2DAYDELAY = "pump2DayDelay";
 const char* PARAM_PUMP2AMOUNT = "pump2DispensingAmount";
 const char* PARAM_PUMP2DAY = "pump2day";
 const char* PARAM_PUMP2ENABLE = "pump2ProgStatus";
+const char* PARAM_PUMP2CALVOLUME = "pump1calibrationVolume";
 
 const char* PARAM_PUMP3CONTAINERVOLUME = "pump3ContainerVolume";
 const char* PARAM_PUMP3DATETIME = "pump3DateTime";
@@ -126,6 +133,7 @@ const char* PARAM_PUMP3DAYDELAY = "pump3DayDelay";
 const char* PARAM_PUMP3AMOUNT = "pump3DispensingAmount";
 const char* PARAM_PUMP3DAY = "pump3day";
 const char* PARAM_PUMP3ENABLE = "pump3ProgStatus";
+const char* PARAM_PUMP3CALVOLUME = "pump1calibrationVolume";
 
 const char* PARAM_PUMP4CONTAINERVOLUME = "pump4ContainerVolume";
 const char* PARAM_PUMP4DATETIME = "pump4DateTime";
@@ -133,8 +141,11 @@ const char* PARAM_PUMP4DAYDELAY = "pump4DayDelay";
 const char* PARAM_PUMP4AMOUNT = "pump4DispensingAmount";
 const char* PARAM_PUMP4DAY = "pump4day";
 const char* PARAM_PUMP4ENABLE = "pump4ProgStatus";
+const char* PARAM_PUMP4CALVOLUME = "pump1calibrationVolume";
 
-char buffer[40];
+const int MAX_STRUCT_SIZE = 44; //TODO: check it by strlen
+char buffer[MAX_STRUCT_SIZE];
+
 boolean commitSucc=false;
 boolean rtcWorking=false;
 
@@ -196,9 +207,21 @@ void initRTC()
 // Replaces placeholder with stored values
 String processor(const String& var)
 {
-  if (var == PARAM_CALVOLUME)
+  if (var == PARAM_PUMP1CALVOLUME)
   {
-    return String(settings.calibrationVolumeL);
+    return String(pump1.calibrationVolumeL);
+  }
+  else if (var == PARAM_PUMP2CALVOLUME)
+  {
+    return String(pump2.calibrationVolumeL);
+  }
+  else if (var == PARAM_PUMP1CALVOLUME)
+  {
+    return String(pump3.calibrationVolumeL);
+  }
+  else if (var == PARAM_PUMP1CALVOLUME)
+  {
+    return String(pump4.calibrationVolumeL);
   }
   else if (var == PARAM_TIMEZONEOFFSET)
   {
@@ -515,9 +538,9 @@ void setup() {
   pump4 = loadPump(P4MEMADD,gpio_PUMP4);
   
   #ifdef EXT_MEMORY
-    fram.read((uint16_t)settings.page, tempSettings);
+    fram.read(SETMEMADD, tempSettings);
   #else
-    EEPROM.get((uint16_t)settings.page,tempSettings);
+    EEPROM.get(SETMEMADD,tempSettings);
   #endif
 
   // Route for root / web page
@@ -607,9 +630,9 @@ void setup() {
   server.on("/save1", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
     #ifdef EXT_MEMORY    
-      fram.write((uint16_t)pump1.page, pump1);
+      fram.write(P1MEMADD, pump1);
     #else
-      EEPROM.put((uint16_t)pump1.page, pump1);
+      EEPROM.put(P1MEMADD, pump1);
       commitSucc = EEPROM.commit();
       Serial.println((commitSucc) ? "Pump 01 parameters saved as requested" : "Commit Pump 01 parameters failed");
     #endif   
@@ -618,9 +641,9 @@ void setup() {
   server.on("/save2", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
     #ifdef EXT_MEMORY    
-      fram.write((uint16_t)pump2.page, pump2);
+      fram.write(P2MEMADD, pump2);
     #else
-      EEPROM.put((uint16_t)pump2.page, pump2);
+      EEPROM.put(P2MEMADD, pump2);
       commitSucc = EEPROM.commit();
       Serial.println((commitSucc) ? "Pump 02 parameters saved as requested" : "Commit Pump 02 parameters failed");
     #endif   
@@ -629,9 +652,9 @@ void setup() {
   server.on("/save3", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
     #ifdef EXT_MEMORY    
-      fram.write((uint16_t)pump3.page, pump3);
+      fram.write(P3MEMADD, pump3);
     #else
-      EEPROM.put((uint16_t)pump3.page, pump3);
+      EEPROM.put(P3MEMADD, pump3);
       commitSucc = EEPROM.commit();
       Serial.println((commitSucc) ? "Pump 03 parameters saved as requested" : "Commit Pump 03 parameters failed");
     #endif   
@@ -640,9 +663,9 @@ void setup() {
   server.on("/save4", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
     #ifdef EXT_MEMORY    
-      fram.write((uint16_t)pump4.page, pump4);
+      fram.write(P4MEMADD, pump4);
     #else
-      EEPROM.put((uint16_t)pump4.page, pump4);
+      EEPROM.put(P4MEMADD, pump4);
       commitSucc = EEPROM.commit();
       Serial.println((commitSucc) ? "Pump 04 parameters saved as requested" : "Commit Pump 04 parameters failed");
     #endif   
@@ -766,19 +789,19 @@ void setup() {
     }
     
     #ifdef EXT_MEMORY    
-      fram.write((uint16_t)settings.page, settings);
-      fram.write((uint16_t)pump1.page, pump1);
+      fram.write(SETMEMADD, settings);
+      fram.write(P1MEMADD, pump1);
     #else
-      EEPROM.put((uint16_t)settings.page, settings);
+      EEPROM.put(SETMEMADD, settings);
       commitSucc = EEPROM.commit();
-      EEPROM.put((uint16_t)pump1.page, pump1);
+      EEPROM.put(P1MEMADD, pump1);
       commitSucc = EEPROM.commit();
     #endif
     #ifdef DEBUG
-      memcpy(buffer, &settings, sizeof(buffer));
+      memcpy(buffer, &settings, sizeof(settings));
       Serial.println("settings DST ");
       Serial.println(buffer);
-      memcpy(buffer, &pump1, sizeof(buffer));
+      memcpy(buffer, &pump1, sizeof(pump1));
       Serial.println("P1 DST ");
       Serial.println(buffer);
     #endif
@@ -817,9 +840,9 @@ void setup() {
           printf("%ld\n", epochTime_Estimate);
           pump1.nextRuntime = (long) t;
           #ifdef EXT_MEMORY
-            fram.write((uint16_t)pump1.page, pump1);
+            fram.write(P1MEMADD, pump1);
           #else
-            EEPROM.put((uint16_t)pump1.page, pump1);
+            EEPROM.put(P1MEMADD, pump1);
             commitSucc = EEPROM.commit();
           #endif        
           #ifdef DEBUG
@@ -840,9 +863,9 @@ void setup() {
       {
         pump1.volumePump_mL = temp.toFloat();
         #ifdef EXT_MEMORY        
-          fram.write((uint16_t)pump1.page, pump1);
+          fram.write(P1MEMADD, pump1);
         #else
-          EEPROM.put((uint16_t)pump1.page, pump1);
+          EEPROM.put(P1MEMADD, pump1);
           commitSucc = EEPROM.commit();
         #endif        
         #ifdef DEBUG
@@ -863,9 +886,9 @@ void setup() {
       {
         pump1.dayDelay = temp.toInt();
         #ifdef EXT_MEMORY
-          fram.write((uint16_t)pump1.page, pump1);
+          fram.write(P1MEMADD, pump1);
         #else
-          EEPROM.put((uint16_t)pump1.page, pump1);
+          EEPROM.put(P1MEMADD, pump1);
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
@@ -890,9 +913,9 @@ void setup() {
       {
         pump1.programEnable = temp.toInt();
         #ifdef EXT_MEMORY
-          fram.write((uint16_t)pump1.page, pump1);
+          fram.write(P1MEMADD, pump1);
         #else
-          EEPROM.put((uint16_t)pump1.page, pump1);
+          EEPROM.put(P1MEMADD, pump1);
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
@@ -929,9 +952,9 @@ void setup() {
           printf("%ld\n", epochTime_Estimate);
           pump2.nextRuntime = (long) t;
           #ifdef EXT_MEMORY
-            fram.write((uint16_t)pump2.page, pump2);
+            fram.write(P2MEMADD, pump2);
           #else
-            EEPROM.put((uint16_t)pump2.page, pump2);
+            EEPROM.put(P2MEMADD, pump2);
             commitSucc = EEPROM.commit();
           #endif        
           #ifdef DEBUG
@@ -952,9 +975,9 @@ void setup() {
       {
         pump2.volumePump_mL = temp.toFloat();
         #ifdef EXT_MEMORY        
-          fram.write((uint16_t)pump2.page, pump2);
+          fram.write(P2MEMADD, pump2);
         #else
-          EEPROM.put((uint16_t)pump2.page, pump2);
+          EEPROM.put(P2MEMADD, pump2);
           commitSucc = EEPROM.commit();
         #endif        
         #ifdef DEBUG
@@ -975,9 +998,9 @@ void setup() {
       {
         pump2.dayDelay = temp.toInt();
         #ifdef EXT_MEMORY
-          fram.write((uint16_t)pump2.page, pump2);
+          fram.write(P2MEMADD, pump2);
         #else
-          EEPROM.put((uint16_t)pump2.page, pump2);
+          EEPROM.put(P2MEMADD, pump2);
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
@@ -999,9 +1022,9 @@ void setup() {
       {
         pump2.programEnable = temp.toInt();
         #ifdef EXT_MEMORY
-          fram.write((uint16_t)pump2.page, pump2);
+          fram.write(P2MEMADD, pump2);
         #else
-          EEPROM.put((uint16_t)pump2.page, pump2);
+          EEPROM.put(P2MEMADD, pump2);
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
@@ -1038,9 +1061,9 @@ void setup() {
           printf("%ld\n", epochTime_Estimate);
           pump3.nextRuntime = (long) t;
           #ifdef EXT_MEMORY
-            fram.write((uint16_t)pump3.page, pump3);
+            fram.write(P3MEMADD, pump3);
           #else
-            EEPROM.put((uint16_t)pump3.page, pump3);
+            EEPROM.put(P3MEMADD, pump3);
             commitSucc = EEPROM.commit();
           #endif        
           #ifdef DEBUG
@@ -1061,9 +1084,9 @@ void setup() {
       {
         pump3.volumePump_mL = temp.toFloat();
         #ifdef EXT_MEMORY        
-          fram.write((uint16_t)pump3.page, pump3);
+          fram.write(P3MEMADD, pump3);
         #else
-          EEPROM.put((uint16_t)pump3.page, pump3);
+          EEPROM.put(P3MEMADD, pump3);
           commitSucc = EEPROM.commit();
         #endif        
         #ifdef DEBUG
@@ -1084,9 +1107,9 @@ void setup() {
       {
         pump3.dayDelay = temp.toInt();
         #ifdef EXT_MEMORY
-          fram.write((uint16_t)pump3.page, pump3);
+          fram.write(P3MEMADD, pump3);
         #else
-          EEPROM.put((uint16_t)pump3.page, pump3);
+          EEPROM.put(P3MEMADD, pump3);
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
@@ -1108,9 +1131,9 @@ void setup() {
       {
         pump3.programEnable = temp.toInt();
         #ifdef EXT_MEMORY
-          fram.write((uint16_t)pump3.page, pump3);
+          fram.write(P3MEMADD, pump3);
         #else
-          EEPROM.put((uint16_t)pump3.page, pump3);
+          EEPROM.put(P3MEMADD, pump3);
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
@@ -1147,9 +1170,9 @@ void setup() {
           printf("%ld\n", epochTime_Estimate);
           pump4.nextRuntime = (long) t;
           #ifdef EXT_MEMORY
-            fram.write((uint16_t)pump4.page, pump4);
+            fram.write(P4MEMADD, pump4);
           #else
-            EEPROM.put((uint16_t)pump4.page, pump4);
+            EEPROM.put(P4MEMADD, pump4);
             commitSucc = EEPROM.commit();
           #endif        
           #ifdef DEBUG
@@ -1170,9 +1193,9 @@ void setup() {
       {
         pump4.volumePump_mL = temp.toFloat();
         #ifdef EXT_MEMORY        
-          fram.write((uint16_t)pump4.page, pump4);
+          fram.write(P4MEMADD, pump4);
         #else
-          EEPROM.put((uint16_t)pump4.page, pump4);
+          EEPROM.put(P4MEMADD, pump4);
           commitSucc = EEPROM.commit();
         #endif        
         #ifdef DEBUG
@@ -1193,9 +1216,9 @@ void setup() {
       {
         pump4.dayDelay = temp.toInt();
         #ifdef EXT_MEMORY
-          fram.write((uint16_t)pump4.page, pump4);
+          fram.write(P4MEMADD, pump4);
         #else
-          EEPROM.put((uint16_t)pump4.page, pump4);
+          EEPROM.put(P4MEMADD, pump4);
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
@@ -1217,9 +1240,9 @@ void setup() {
       {
         pump4.programEnable = temp.toInt();
         #ifdef EXT_MEMORY
-          fram.write((uint16_t)pump4.page, pump4);
+          fram.write(P4MEMADD, pump4);
         #else
-          EEPROM.put((uint16_t)pump1.page, pump4);
+          EEPROM.put(P4MEMADD, pump4);
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
@@ -1332,16 +1355,16 @@ void loop() {
     }   
   }
 
-  checkPump(pump1, "1");
-  checkPump(pump2, "2");
-  checkPump(pump3, "3");
-  checkPump(pump4, "4");
+  checkPump(pump1, P1MEMADD);
+  checkPump(pump2, P2MEMADD);
+  checkPump(pump3, P3MEMADD);
+  checkPump(pump4, P4MEMADD);
 
   //WIP: Implement Reset to Defaults
   factoryReset();
 }
 
-void checkPump(pumpStruct pump, const char pumpn[1])
+void checkPump(pumpStruct pump, int address)
 {
   if (pump.nextRuntime  ==  epochTime_Estimate && pump.programEnable == true && pump.containerVolume > 0)
   {
@@ -1351,9 +1374,9 @@ void checkPump(pumpStruct pump, const char pumpn[1])
     pump.totalvolumePumped_mL += pump.volumePump_mL;
     pump.containerVolume -= pump.volumePump_mL;
     #ifdef EXT_MEMORY    
-      fram.write((uint16_t)pump.page, pump);
+      fram.write(address, pump);
     #else
-      EEPROM.put((uint16_t)pump.page, pump);
+      EEPROM.put(address, pump);
       commitSucc = EEPROM.commit();
     #endif
     #ifdef DEBUG
@@ -1361,8 +1384,8 @@ void checkPump(pumpStruct pump, const char pumpn[1])
       Serial.println("Pump page ");
       Serial.println(buffer);
     #endif
-    delay(round((pump.volumePump_mL * pump.CAL_pumpmS) / settings.calibrationVolumeL));
-    Serial.print(round((pump.volumePump_mL * pump.CAL_pumpmS) / settings.calibrationVolumeL));
+    delay(round((pump.volumePump_mL * pump.CAL_pumpmS) / pump.calibrationVolumeL));
+    Serial.print(round((pump.volumePump_mL * pump.CAL_pumpmS) / pump.calibrationVolumeL));
     digitalWrite(pump.motor_GPIO, LOW);
     events.send(String(pump.nextRuntime).c_str(),"pumpnextDatetime",millis());
   }
@@ -1375,7 +1398,7 @@ void checkPump(pumpStruct pump, const char pumpn[1])
 pumpStruct loadPump(const int address, int motor)
 {
   pumpStruct pump;
-  pump.valid_read = false;
+  strcpy(pump.valid_read, "NaN");
   
   #ifdef EXT_MEMORY
     fram.read(address, pump);
@@ -1389,7 +1412,7 @@ pumpStruct loadPump(const int address, int motor)
     Serial.println(buffer);
   #endif    
 
-  if(pump.valid_read == true)
+  if(pump.valid_read == "$$$")
   {
     #ifdef DEBUG
       Serial.println("Values read correctly");
@@ -1446,8 +1469,7 @@ pumpStruct loadPump(const int address, int motor)
     pump.containerVolume=0;       //amount of in pump reservoir.                                 2bytes
     pump.motor_GPIO = motor;      //                                                             2bytes
     pump.programEnable = false;   //                                                             1byte
-    pump.page = 0;
-    pump.valid_read = true;
+    strcpy(pump.valid_read, "$$$");
     
     EEPROM.put(address, pump);
     commitSucc = EEPROM.commit();
