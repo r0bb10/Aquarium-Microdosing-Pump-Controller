@@ -57,20 +57,11 @@
 #define SDA_PIN 4
 #define SCL_PIN 5
 
-//<<<<<<< HEAD
-//=======
-//>>>>>>> origin/wifimanager
-
 #define P1MEMADD 100
 #define P2MEMADD 200
 #define P3MEMADD 300
 #define P4MEMADD 400
 #define SETMEMADD 1000
-
-// Replace with your network credentials
-const char* ssid = "Chi legge puzza";
-const char* password = "T3QU1Puzz4!";
-
 
 // Set PUMP GPIO
 const int gpio_PUMP1 = 12;
@@ -113,7 +104,6 @@ const char* PARAM_TIMEZONEOFFSET = "timezoneOffset";
 
 const char* PARAM_PUMP1CONTAINERVOLUME = "pump1ContainerVolume";
 const char* PARAM_PUMP1DATETIME = "pump1DateTime";
-const char* PARAM_PUMP1DAYDELAY = "pump1DayDelay";
 const char* PARAM_PUMP1AMOUNT = "pump1DispensingAmount";
 const char* PARAM_PUMP1DAY = "pump1day";
 const char* PARAM_PUMP1ENABLE = "pump1ProgStatus";
@@ -121,7 +111,6 @@ const char* PARAM_PUMP1CALVOLUME = "pump1calibrationVolume";
 
 const char* PARAM_PUMP2CONTAINERVOLUME = "pump2ContainerVolume";
 const char* PARAM_PUMP2DATETIME = "pump2DateTime";
-const char* PARAM_PUMP2DAYDELAY = "pump2DayDelay";
 const char* PARAM_PUMP2AMOUNT = "pump2DispensingAmount";
 const char* PARAM_PUMP2DAY = "pump2day";
 const char* PARAM_PUMP2ENABLE = "pump2ProgStatus";
@@ -129,7 +118,6 @@ const char* PARAM_PUMP2CALVOLUME = "pump1calibrationVolume";
 
 const char* PARAM_PUMP3CONTAINERVOLUME = "pump3ContainerVolume";
 const char* PARAM_PUMP3DATETIME = "pump3DateTime";
-const char* PARAM_PUMP3DAYDELAY = "pump3DayDelay";
 const char* PARAM_PUMP3AMOUNT = "pump3DispensingAmount";
 const char* PARAM_PUMP3DAY = "pump3day";
 const char* PARAM_PUMP3ENABLE = "pump3ProgStatus";
@@ -137,7 +125,6 @@ const char* PARAM_PUMP3CALVOLUME = "pump1calibrationVolume";
 
 const char* PARAM_PUMP4CONTAINERVOLUME = "pump4ContainerVolume";
 const char* PARAM_PUMP4DATETIME = "pump4DateTime";
-const char* PARAM_PUMP4DAYDELAY = "pump4DayDelay";
 const char* PARAM_PUMP4AMOUNT = "pump4DispensingAmount";
 const char* PARAM_PUMP4DAY = "pump4day";
 const char* PARAM_PUMP4ENABLE = "pump4ProgStatus";
@@ -215,11 +202,11 @@ String processor(const String& var)
   {
     return String(pump2.calibrationVolumeL);
   }
-  else if (var == PARAM_PUMP1CALVOLUME)
+  else if (var == PARAM_PUMP3CALVOLUME)
   {
     return String(pump3.calibrationVolumeL);
   }
-  else if (var == PARAM_PUMP1CALVOLUME)
+  else if (var == PARAM_PUMP4CALVOLUME)
   {
     return String(pump4.calibrationVolumeL);
   }
@@ -234,10 +221,6 @@ String processor(const String& var)
   else if (var == PARAM_PUMP1AMOUNT)
   {
     return String(pump1.volumePump_mL);
-  }
-  else if (var == PARAM_PUMP1DAYDELAY)
-  {
-    return String(pump1.dayDelay);
   }
   else if (var == PARAM_PUMP1DATETIME)
   {
@@ -282,10 +265,6 @@ String processor(const String& var)
   {
     return String(pump2.volumePump_mL);
   }
-  else if (var == PARAM_PUMP2DAYDELAY)
-  {
-    return String(pump2.dayDelay);
-  }
   else if (var == PARAM_PUMP2DATETIME)
   {
     if(pump2.nextRuntime == 0)
@@ -328,10 +307,6 @@ String processor(const String& var)
   else if (var == PARAM_PUMP3AMOUNT)
   {
     return String(pump3.volumePump_mL);
-  }
-  else if (var == PARAM_PUMP3DAYDELAY)
-  {
-    return String(pump3.dayDelay);
   }
   else if (var == PARAM_PUMP3DATETIME)
   {
@@ -376,10 +351,6 @@ String processor(const String& var)
   {
     return String(pump4.volumePump_mL);
   }
-  else if (var == PARAM_PUMP4DAYDELAY)
-  {
-    return String(pump4.dayDelay);
-  }
   else if (var == PARAM_PUMP4DATETIME)
   {
     if(pump4.nextRuntime == 0)
@@ -406,7 +377,7 @@ String processor(const String& var)
     return String(pump4.dayDelay);
   }
   else if (var == PARAM_PUMP4ENABLE) {
-    if (pump1.programEnable)
+    if (pump4.programEnable)
     {
       return String("Enabled");
     }
@@ -810,6 +781,10 @@ void setup() {
   });
 
   server.on("/getProgram", HTTP_GET, [] (AsyncWebServerRequest * request) {
+    
+//----------------------------------
+//-------PUMP 1 REQUESTS------------
+//----------------------------------    
     if (request->hasParam(PARAM_PUMP1DATETIME)) {
       String temp = request->getParam(PARAM_PUMP1DATETIME)->value();
       if (temp.length() == 0)
@@ -846,7 +821,7 @@ void setup() {
             commitSucc = EEPROM.commit();
           #endif        
           #ifdef DEBUG
-            memcpy(buffer, &pump1, sizeof(buffer));
+            itoa(pump1.nextRuntime, buffer, 10);
             Serial.println("P1 next time run ");
             Serial.println(buffer);
           #endif
@@ -869,8 +844,52 @@ void setup() {
           commitSucc = EEPROM.commit();
         #endif        
         #ifdef DEBUG
-          memcpy(buffer, &pump1, sizeof(buffer));
+          itoa(pump1.volumePump_mL, buffer, 10);
           Serial.println("P1 volume mL ");
+          Serial.println(buffer);
+        #endif
+      }
+    }
+    if (request->hasParam(PARAM_PUMP1CALVOLUME)) {
+      String temp = request->getParam(PARAM_PUMP1CALVOLUME)->value();
+      if (temp.length() == 0)
+      {
+        Serial.println("Empty String");
+      }
+      else
+      {
+        pump1.calibrationVolumeL = temp.toFloat();
+        #ifdef EXT_MEMORY        
+          fram.write(P1MEMADD, pump1);
+        #else
+          EEPROM.put(P1MEMADD, pump1);
+          commitSucc = EEPROM.commit();
+        #endif        
+        #ifdef DEBUG
+          itoa(pump1.calibrationVolumeL, buffer, 10);
+          Serial.println("P1 calibration volume mL ");
+          Serial.println(buffer);
+        #endif
+      }
+    }
+    if (request->hasParam(PARAM_PUMP1CONTAINERVOLUME)) {
+      String temp = request->getParam(PARAM_PUMP1CONTAINERVOLUME)->value();
+      if (temp.length() == 0)
+      {
+        Serial.println("Empty String");
+      }
+      else
+      {
+        pump1.containerVolume = temp.toFloat();
+        #ifdef EXT_MEMORY        
+          fram.write(P1MEMADD, pump1);
+        #else
+          EEPROM.put(P1MEMADD, pump1);
+          commitSucc = EEPROM.commit();
+        #endif        
+        #ifdef DEBUG
+          itoa(pump1.containerVolume, buffer, 10);
+          Serial.println("P1 container volume mL ");
           Serial.println(buffer);
         #endif
       }
@@ -892,7 +911,7 @@ void setup() {
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
-          memcpy(buffer, &pump1, sizeof(buffer));
+          itoa(pump1.dayDelay, buffer, 10);
           Serial.println("P1 dayDelay ");
           Serial.println(buffer);
         #endif
@@ -900,10 +919,6 @@ void setup() {
     }
     if (request->hasParam(PARAM_PUMP1ENABLE)) {
       String temp = request->getParam(PARAM_PUMP1ENABLE)->value();
-      #ifdef DEBUG
-        Serial.println("P1 dosing date");
-        Serial.println(temp);
-      #endif
 
       if (temp.length() == 0)
       {
@@ -919,12 +934,16 @@ void setup() {
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
-          memcpy(buffer, &pump1, sizeof(buffer));
+          itoa(pump1.programEnable, buffer, 10);
           Serial.println("P1 enable ");
           Serial.println(buffer);
         #endif
       }
     }
+
+//----------------------------------
+//-------PUMP 2 REQUESTS------------
+//----------------------------------
     if (request->hasParam(PARAM_PUMP2DATETIME)) {
       String temp = request->getParam(PARAM_PUMP2DATETIME)->value();
       if (temp.length() == 0)
@@ -934,8 +953,11 @@ void setup() {
       else
       {
         temp += ":00";
-        Serial.println(temp.c_str());
-        //
+        #ifdef DEBUG
+          Serial.println("Request for time/date ");
+          Serial.println(temp.c_str());
+        #endif
+
         struct tm tm;
         time_t t;
         if (strptime(temp.c_str(), "%Y-%m-%dT%H:%M:%S", &tm) == NULL)
@@ -958,9 +980,9 @@ void setup() {
             commitSucc = EEPROM.commit();
           #endif        
           #ifdef DEBUG
-          memcpy(buffer, &pump2, sizeof(buffer));
-          Serial.println("P2 nextRuntime ");
-          Serial.println(buffer);
+            itoa(pump2.nextRuntime, buffer, 10);
+            Serial.println("P2 next time run ");
+            Serial.println(buffer);
           #endif
         }
       }
@@ -981,8 +1003,52 @@ void setup() {
           commitSucc = EEPROM.commit();
         #endif        
         #ifdef DEBUG
-          memcpy(buffer, &pump2, sizeof(buffer));
-          Serial.println("P2 volume pump ");
+          itoa(pump2.volumePump_mL, buffer, 10);
+          Serial.println("P2 volume mL ");
+          Serial.println(buffer);
+        #endif
+      }
+    }
+    if (request->hasParam(PARAM_PUMP2CALVOLUME)) {
+      String temp = request->getParam(PARAM_PUMP2CALVOLUME)->value();
+      if (temp.length() == 0)
+      {
+        Serial.println("Empty String");
+      }
+      else
+      {
+        pump2.calibrationVolumeL = temp.toFloat();
+        #ifdef EXT_MEMORY        
+          fram.write(P2MEMADD, pump2);
+        #else
+          EEPROM.put(P2MEMADD, pump2);
+          commitSucc = EEPROM.commit();
+        #endif        
+        #ifdef DEBUG
+          itoa(pump2.calibrationVolumeL, buffer, 10);
+          Serial.println("P2 calibration volume mL ");
+          Serial.println(buffer);
+        #endif
+      }
+    }
+    if (request->hasParam(PARAM_PUMP2CONTAINERVOLUME)) {
+      String temp = request->getParam(PARAM_PUMP2CONTAINERVOLUME)->value();
+      if (temp.length() == 0)
+      {
+        Serial.println("Empty String");
+      }
+      else
+      {
+        pump2.containerVolume = temp.toFloat();
+        #ifdef EXT_MEMORY        
+          fram.write(P2MEMADD, pump2);
+        #else
+          EEPROM.put(P2MEMADD, pump2);
+          commitSucc = EEPROM.commit();
+        #endif        
+        #ifdef DEBUG
+          itoa(pump2.containerVolume, buffer, 10);
+          Serial.println("P2 container volume mL ");
           Serial.println(buffer);
         #endif
       }
@@ -1004,7 +1070,7 @@ void setup() {
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
-          memcpy(buffer, &pump2, sizeof(buffer));
+          itoa(pump2.dayDelay, buffer, 10);
           Serial.println("P2 dayDelay ");
           Serial.println(buffer);
         #endif
@@ -1012,7 +1078,6 @@ void setup() {
     }
     if (request->hasParam(PARAM_PUMP2ENABLE)) {
       String temp = request->getParam(PARAM_PUMP2ENABLE)->value();
-      Serial.println(temp);
 
       if (temp.length() == 0)
       {
@@ -1028,12 +1093,16 @@ void setup() {
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
-          memcpy(buffer, &pump2, sizeof(buffer));
+          itoa(pump2.programEnable, buffer, 10);
           Serial.println("P2 enable ");
           Serial.println(buffer);
         #endif
       }
     }
+
+//----------------------------------
+//-------PUMP 3 REQUESTS------------
+//----------------------------------
     if (request->hasParam(PARAM_PUMP3DATETIME)) {
       String temp = request->getParam(PARAM_PUMP3DATETIME)->value();
       if (temp.length() == 0)
@@ -1043,8 +1112,11 @@ void setup() {
       else
       {
         temp += ":00";
-        Serial.println(temp.c_str());
-        //
+        #ifdef DEBUG
+          Serial.println("Request for time/date ");
+          Serial.println(temp.c_str());
+        #endif
+
         struct tm tm;
         time_t t;
         if (strptime(temp.c_str(), "%Y-%m-%dT%H:%M:%S", &tm) == NULL)
@@ -1067,7 +1139,7 @@ void setup() {
             commitSucc = EEPROM.commit();
           #endif        
           #ifdef DEBUG
-            memcpy(buffer, &pump3, sizeof(buffer));
+            itoa(pump3.nextRuntime, buffer, 10);
             Serial.println("P3 next time run ");
             Serial.println(buffer);
           #endif
@@ -1090,8 +1162,52 @@ void setup() {
           commitSucc = EEPROM.commit();
         #endif        
         #ifdef DEBUG
-          memcpy(buffer, &pump3, sizeof(buffer));
-          Serial.println("P3 pump volume ");
+          itoa(pump3.volumePump_mL, buffer, 10);
+          Serial.println("P3 volume mL ");
+          Serial.println(buffer);
+        #endif
+      }
+    }
+    if (request->hasParam(PARAM_PUMP3CALVOLUME)) {
+      String temp = request->getParam(PARAM_PUMP3CALVOLUME)->value();
+      if (temp.length() == 0)
+      {
+        Serial.println("Empty String");
+      }
+      else
+      {
+        pump3.calibrationVolumeL = temp.toFloat();
+        #ifdef EXT_MEMORY        
+          fram.write(P3MEMADD, pump3);
+        #else
+          EEPROM.put(P3MEMADD, pump3);
+          commitSucc = EEPROM.commit();
+        #endif        
+        #ifdef DEBUG
+          itoa(pump3.calibrationVolumeL, buffer, 10);
+          Serial.println("P3 calibration volume mL ");
+          Serial.println(buffer);
+        #endif
+      }
+    }
+    if (request->hasParam(PARAM_PUMP3CONTAINERVOLUME)) {
+      String temp = request->getParam(PARAM_PUMP3CONTAINERVOLUME)->value();
+      if (temp.length() == 0)
+      {
+        Serial.println("Empty String");
+      }
+      else
+      {
+        pump3.containerVolume = temp.toFloat();
+        #ifdef EXT_MEMORY        
+          fram.write(P3MEMADD, pump3);
+        #else
+          EEPROM.put(P3MEMADD, pump3);
+          commitSucc = EEPROM.commit();
+        #endif        
+        #ifdef DEBUG
+          itoa(pump3.containerVolume, buffer, 10);
+          Serial.println("P3 container volume mL ");
           Serial.println(buffer);
         #endif
       }
@@ -1113,7 +1229,7 @@ void setup() {
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
-          memcpy(buffer, &pump3, sizeof(buffer));
+          itoa(pump3.dayDelay, buffer, 10);
           Serial.println("P3 dayDelay ");
           Serial.println(buffer);
         #endif
@@ -1121,7 +1237,6 @@ void setup() {
     }
     if (request->hasParam(PARAM_PUMP3ENABLE)) {
       String temp = request->getParam(PARAM_PUMP3ENABLE)->value();
-      Serial.println(temp);
 
       if (temp.length() == 0)
       {
@@ -1137,12 +1252,16 @@ void setup() {
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
-          memcpy(buffer, &pump3, sizeof(buffer));
+          itoa(pump3.programEnable, buffer, 10);
           Serial.println("P3 enable ");
           Serial.println(buffer);
         #endif
       }
     }
+    
+//----------------------------------
+//-------PUMP 4 REQUESTS------------
+//----------------------------------    
     if (request->hasParam(PARAM_PUMP4DATETIME)) {
       String temp = request->getParam(PARAM_PUMP4DATETIME)->value();
       if (temp.length() == 0)
@@ -1152,8 +1271,11 @@ void setup() {
       else
       {
         temp += ":00";
-        Serial.println(temp.c_str());
-        //
+        #ifdef DEBUG
+          Serial.println("Request for time/date ");
+          Serial.println(temp.c_str());
+        #endif
+
         struct tm tm;
         time_t t;
         if (strptime(temp.c_str(), "%Y-%m-%dT%H:%M:%S", &tm) == NULL)
@@ -1176,8 +1298,8 @@ void setup() {
             commitSucc = EEPROM.commit();
           #endif        
           #ifdef DEBUG
-            memcpy(buffer, &pump4, sizeof(buffer));
-            Serial.println("P5 next time run ");
+            itoa(pump4.nextRuntime, buffer, 10);
+            Serial.println("P4 next time run ");
             Serial.println(buffer);
           #endif
         }
@@ -1199,9 +1321,53 @@ void setup() {
           commitSucc = EEPROM.commit();
         #endif        
         #ifdef DEBUG
-            memcpy(buffer, &pump4, sizeof(buffer));
-            Serial.println("P4 volume pump ");
-            Serial.println(buffer);
+          itoa(pump4.volumePump_mL, buffer, 10);
+          Serial.println("P4 volume mL ");
+          Serial.println(buffer);
+        #endif
+      }
+    }
+    if (request->hasParam(PARAM_PUMP4CALVOLUME)) {
+      String temp = request->getParam(PARAM_PUMP4CALVOLUME)->value();
+      if (temp.length() == 0)
+      {
+        Serial.println("Empty String");
+      }
+      else
+      {
+        pump4.calibrationVolumeL = temp.toFloat();
+        #ifdef EXT_MEMORY        
+          fram.write(P4MEMADD, pump4);
+        #else
+          EEPROM.put(P4MEMADD, pump4);
+          commitSucc = EEPROM.commit();
+        #endif        
+        #ifdef DEBUG
+          itoa(pump4.calibrationVolumeL, buffer, 10);
+          Serial.println("P4 calibration volume mL ");
+          Serial.println(buffer);
+        #endif
+      }
+    }
+    if (request->hasParam(PARAM_PUMP4CONTAINERVOLUME)) {
+      String temp = request->getParam(PARAM_PUMP4CONTAINERVOLUME)->value();
+      if (temp.length() == 0)
+      {
+        Serial.println("Empty String");
+      }
+      else
+      {
+        pump4.containerVolume = temp.toFloat();
+        #ifdef EXT_MEMORY        
+          fram.write(P4MEMADD, pump4);
+        #else
+          EEPROM.put(P4MEMADD, pump4);
+          commitSucc = EEPROM.commit();
+        #endif        
+        #ifdef DEBUG
+          itoa(pump4.containerVolume, buffer, 10);
+          Serial.println("P4 container volume mL ");
+          Serial.println(buffer);
         #endif
       }
     }
@@ -1222,15 +1388,14 @@ void setup() {
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
-            memcpy(buffer, &pump4, sizeof(buffer));
-            Serial.println("P4 dayDelay ");
-            Serial.println(buffer);
+          itoa(pump4.dayDelay, buffer, 10);
+          Serial.println("P4 dayDelay ");
+          Serial.println(buffer);
         #endif
       }
     }
     if (request->hasParam(PARAM_PUMP4ENABLE)) {
       String temp = request->getParam(PARAM_PUMP4ENABLE)->value();
-      Serial.println(temp);
 
       if (temp.length() == 0)
       {
@@ -1246,12 +1411,13 @@ void setup() {
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
-            memcpy(buffer, &pump4, sizeof(buffer));
-            Serial.println("P4 enable ");
-            Serial.println(buffer);
+          itoa(pump4.programEnable, buffer, 10);
+          Serial.println("P4 enable ");
+          Serial.println(buffer);
         #endif
       }
     }
+
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
 
@@ -1410,9 +1576,10 @@ pumpStruct loadPump(const int address, int motor)
     itoa(address/100, buffer, 10);
     Serial.println("Pump number");
     Serial.println(buffer);
+    Serial.println(pump.valid_read);
   #endif    
 
-  if(pump.valid_read == "$$$")
+  if((pump.valid_read[0] == '$')&&(pump.valid_read[1] == '$')&&(pump.valid_read[2] == '$'))
   {
     #ifdef DEBUG
       Serial.println("Values read correctly");

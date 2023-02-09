@@ -1,3 +1,10 @@
+   var enable = [
+    { enableId: 'Enabled', enableName: 'ENABLED' },
+    { enableId: 'Disabled', enableName: 'DISABLED' }
+];
+   
+   
+   
    function toggleCheckbox(x) {
        var xhr = new XMLHttpRequest();
        xhr.open("GET", "/" + x, true);
@@ -12,6 +19,39 @@
            }
        };
        xhttp.open("GET", "/pump1runtime", true);
+       xhttp.send();
+   }, 100);
+   
+      setInterval(function() {
+       var xhttp = new XMLHttpRequest();
+       xhttp.onreadystatechange = function() {
+           if (this.readyState == 4 && this.status == 200) {
+               document.getElementById("pump2runtime").innerHTML = this.responseText;
+           }
+       };
+       xhttp.open("GET", "/pump2runtime", true);
+       xhttp.send();
+   }, 100);
+   
+      setInterval(function() {
+       var xhttp = new XMLHttpRequest();
+       xhttp.onreadystatechange = function() {
+           if (this.readyState == 4 && this.status == 200) {
+               document.getElementById("pump3runtime").innerHTML = this.responseText;
+           }
+       };
+       xhttp.open("GET", "/pump3runtime", true);
+       xhttp.send();
+   }, 100);
+   
+      setInterval(function() {
+       var xhttp = new XMLHttpRequest();
+       xhttp.onreadystatechange = function() {
+           if (this.readyState == 4 && this.status == 200) {
+               document.getElementById("pump4runtime").innerHTML = this.responseText;
+           }
+       };
+       xhttp.open("GET", "/pump4runtime", true);
        xhttp.send();
    }, 100);
 
@@ -48,31 +88,31 @@
        source.addEventListener('currentTime', function(e) {
            milliseconds = e.data * 1000 // 1575909015000
            dateObject = new Date(milliseconds)
-           document.getElementById("currentDatetime").innerHTML = dateObject.toLocaleString("en-US", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
+           document.getElementById("currentDatetime").innerHTML = dateObject.toLocaleString("en-GB", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
        }, false);
 
        source.addEventListener('pump1nextDatetime', function(e) {
            milliseconds = e.data * 1000 // 1575909015000
            dateObject = new Date(milliseconds)
-           document.getElementById("pump1nextDatetime").innerHTML = "Pump 1 next active: " + dateObject.toLocaleString("en-US", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
+           document.getElementById("pump1nextDatetime").innerHTML = "Pump 1 next active: " + dateObject.toLocaleString("en-GB", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
        }, false);
        
        source.addEventListener('pump2nextDatetime', function(e) {
            milliseconds = e.data * 1000 
            dateObject = new Date(milliseconds)
-           document.getElementById("pump2nextDatetime").innerHTML = "Pump 2 next active: " + dateObject.toLocaleString("en-US", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
+           document.getElementById("pump2nextDatetime").innerHTML = "Pump 2 next active: " + dateObject.toLocaleString("en-GB", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
        }, false);
        
        source.addEventListener('pump3nextDatetime', function(e) {
            milliseconds = e.data * 1000
            dateObject = new Date(milliseconds)
-           document.getElementById("pump3nextDatetime").innerHTML = "Pump 3 next active: " + dateObject.toLocaleString("en-US", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
+           document.getElementById("pump3nextDatetime").innerHTML = "Pump 3 next active: " + dateObject.toLocaleString("en-GB", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
        }, false);
        
        source.addEventListener('pump4nextDatetime', function(e) {
            milliseconds = e.data * 1000
            dateObject = new Date(milliseconds)
-           document.getElementById("pump4nextDatetime").innerHTML = "Pump 4 next active: " + dateObject.toLocaleString("en-US", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
+           document.getElementById("pump4nextDatetime").innerHTML = "Pump 4 next active: " + dateObject.toLocaleString("en-GB", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
        }, false);
       
    }

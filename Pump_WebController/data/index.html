@@ -28,35 +28,45 @@
 			<th>STATUS</th>
 			<th>NEXT DOSE</th>
 			<th>DISPENSING AMOUNT in mL</th>
-			<th>RESERVOIR VOLUME in mL</th>
+			<th>CONTAINER VOLUME in mL</th>
+			<th>DOSING INTERVAL</th>
+			<th>CALIBRATION VOLUME in mL</th>
 		  </tr>
 		  <tr>
 			<td>01</td>
-			<td id="pump1nextDatetime">%pump1ProgStatus%</td>
-			<td>%pump1ProgTime%</td>
+			<td >%pump1ProgStatus%</td>
+			<td id="pump1nextDatetime">%pump1DateTime%</td>
 			<td>%pump1DispensingAmount%</td>
 			<td>%pump1ContainerVolume%</td>
+			<td>%pump1day%</td>
+			<td>%pump1calibrationVolume%</td>
 		  </tr>
 		  <tr>
 			<td>02</td>
-			<td id="pump2nextDatetime">%pump2ProgStatus%</td>
-			<td>%pump2ProgTime%</td>
+			<td >%pump2ProgStatus%</td>
+			<td id="pump2nextDatetime">%pump2DateTime%</td>
 			<td>%pump2DispensingAmount%</td>
 			<td>%pump2ContainerVolume%</td>
+			<td>%pump2day%</td>
+			<td>%pump2calibrationVolume%</td>
 		  </tr>
 		  <tr>
 			<td>03</td>
-			<td id="pump3nextDatetime">%pump3ProgStatus%</td>
-			<td>%pump3ProgTime%</td>
+			<td >%pump3ProgStatus%</td>
+			<td id="pump3nextDatetime">%pump3DateTime%</td>
 			<td>%pump3DispensingAmount%</td>
 			<td>%pump3ContainerVolume%</td>
+			<td>%pump3day%</td>
+			<td>%pump3calibrationVolume%</td>
 		  </tr>
 		  <tr>
 			<td>04</td>
-			<td id="pump4nextDatetime">%pump4ProgStatus%</td>
-			<td>%pump4ProgTime%</td>
+			<td >%pump4ProgStatus%</td>
+			<td id="pump4nextDatetime">%pump4DateTime%</td>
 			<td>%pump4DispensingAmount%</td>
 			<td>%pump4ContainerVolume%</td>
+			<td>%pump4day%</td>
+			<td>%pump4calibrationVolume%</td>
 		  </tr>
 
 		</table>
@@ -72,20 +82,14 @@
 			<th>START TIME</th>
 			<th>DISPENSING AMOUNT in mL</th>
 			<th>FREQUENCY</th>
-			<th>RESERVOIR VOL in mL</th>
+			<th>CONTAINER VOL in mL</th>
 			<th>SUBMIT</th>
 		  </tr>
 		  <tr>
 			<form action="/getProgram" target="hiddenFrame">  
 				<td>01</td>
-				<td>
-					%pump1ProgStatus%
-					<select name="pump1ProgStatus">
-						<option id="No" value="0">NO</option>
-						<option id="Yes" value="1">YES</option>
-					</select>
-				</td>
-				<td><input type="datetime-local" name="pump1DateTime" multiple></td>
+				<td>%pump1ProgStatus%<select name="pump1ProgStatus"><option id="No" value="0">NO</option><option id="Yes" value="1">YES</option></select></td>
+				<td>%pump1DateTime%<input type="datetime-local" name="pump1DateTime" multiple></td>
 				<td>%pump1DispensingAmount%<input type="number " name="pump1DispensingAmount" multiple></td>
 				<td>%pump1day%<input type="number " name="pump1day" multiple></td>
 				<td>%pump1ContainerVolume% <input type="number " name="pump1ContainerVolume" multiple></td>
@@ -95,14 +99,8 @@
 		  <tr>
 			<form action="/getProgram" target="hiddenFrame">  
 				<td>02</td>
-				<td>
-					%pump2ProgStatus%
-					<select name="pump2ProgStatus">
-						<option id="No" value="0">NO</option>
-						<option id="Yes" value="1">YES</option>
-					</select>
-				</td>
-				<td><input type="datetime-local" name="pump2DateTime" multiple></td>
+				<td>%pump2ProgStatus%<select name="pump2ProgStatus"><option id="No" value="0">NO</option><option id="Yes" value="1">YES</option></select></td>
+				<td>%pump1DateTime%<input type="datetime-local" name="pump2DateTime" multiple></td>
 				<td>%pump2DispensingAmount%<input type="number " name="pump2DispensingAmount" multiple></td>
 				<td>%pump2day%<input type="number " name="pump2day" multiple></td>
 				<td>%pump2ContainerVolume% <input type="number " name="pump2ContainerVolume" multiple></td>
@@ -112,14 +110,8 @@
 		  <tr>
 			<form action="/getProgram" target="hiddenFrame">  
 				<td>03</td>
-				<td>
-					%pump3ProgStatus%
-					<select name="pump3ProgStatus">
-						<option id="No" value="0">NO</option>
-						<option id="Yes" value="1">YES</option>
-					</select>
-				</td>
-				<td><input type="datetime-local" name="pump3DateTime" multiple></td>
+				<td>%pump3ProgStatus%<select name="pump3ProgStatus"><option id="No" value="0">NO</option><option id="Yes" value="1">YES</option></select></td>
+				<td>%pump3DateTime%<input type="datetime-local" name="pump3DateTime" multiple></td>
 				<td>%pump3DispensingAmount%<input type="number " name="pump3DispensingAmount" multiple></td>
 				<td>%pump3day%<input type="number " name="pump3day" multiple></td>
 				<td>%pump3ContainerVolume% <input type="number " name="pump3ContainerVolume" multiple></td>
@@ -129,14 +121,8 @@
 		  <tr>
 			<form action="/getProgram" target="hiddenFrame">  
 				<td>04</td>
-				<td>
-					%pump4ProgStatus%
-					<select name="pump4ProgStatus">
-						<option id="No" value="0">NO</option>
-						<option id="Yes" value="1">YES</option>
-					</select>
-				</td>
-				<td><input type="datetime-local" name="pump4DateTime" multiple></td>
+				<td>%pump4ProgStatus%<select name="pump4ProgStatus"><option id="No" value="0">NO</option><option id="Yes" value="1">YES</option></select></td>
+				<td>%pump4DateTime%<input type="datetime-local" name="pump4DateTime" multiple></td>
 				<td>%pump4DispensingAmount%<input type="number " name="pump4DispensingAmount" multiple></td>
 				<td>%pump4day%<input type="number " name="pump4day" multiple></td>
 				<td>%pump4ContainerVolume% <input type="number " name="pump4ContainerVolume" multiple></td>
@@ -173,19 +159,35 @@
     </div>
     <div id="Calibration" class="tabcontent">
         <h3>Calibration</h3>
-        <span class="sensor-labels">Pumps Calibration (%calibrationVolume% mL):</span>
-        <span id="pump1runtime">%STATE%</span>
-        <span> Seconds </span>
-        </p>
         <p>
             <script src="/javascript.js"></script>
 				<table class="center">
+					<tr>
+						<th>
+							RUN
+						</th>
+						<th>
+							SAVE
+						</th>
+						<th>
+							CALIBRATION VOLUME in mL
+						</th>
+						<th>
+							CALIBRATION TIME in S
+						</th>
+					</tr>
 					<tr>
 						<th>
 							<button class="button" onmousedown="toggleCheckbox('cal1on');" ontouchstart="toggleCheckbox('cal1on');" onmouseup="toggleCheckbox('cal1off');" ontouchend="toggleCheckbox('cal1off');">RUN PUMP 1</button>
 						</th>
 						<th>
 							<button class="button" onmouseup="toggleCheckbox('save1');" ontouchend="toggleCheckbox('save1');">SAVE PUMP 1 CALIBRATION</button>
+						</th>
+						<th>
+							%pump1calibrationVolume%
+						</th>
+						<th>
+							%pump1runtime%
 						</th>
 					</tr>
 					<tr>
@@ -195,6 +197,12 @@
 						<th>
 							<button class="button" onmouseup="toggleCheckbox('save2');" ontouchend="toggleCheckbox('save2');">SAVE PUMP 2 CALIBRATION</button>
 						</th>
+						<th>
+							%pump2calibrationVolume%
+						</th>
+						<th>
+							%pump2runtime%
+						</th>
 					</tr>
 					<tr>
 						<th>
@@ -203,6 +211,12 @@
 						<th>
 							<button class="button" onmouseup="toggleCheckbox('save3');" ontouchend="toggleCheckbox('save3');">SAVE PUMP 3 CALIBRATION</button>
 						</th>
+						<th>
+							%pump3calibrationVolume%
+						</th>
+						<th>
+							%pump3runtime%
+						</th>
 					</tr>
 					<tr>
 						<th>
@@ -210,6 +224,12 @@
 						</th>
 						<th>
 							<button class="button" onmouseup="toggleCheckbox('save4');" ontouchend="toggleCheckbox('save4');">SAVE PUMP 4 CALIBRATION</button>
+						</th>
+						<th>
+							%pump4calibrationVolume%
+						</th>
+						<th>
+							%pump4runtime%
 						</th>
 					</tr>
 				</table>

@@ -11,7 +11,7 @@ html {
 }
 
 * {
-    box-sizing: border-box
+    box-sizing: border-box;
 }
 
 /* Set height of body and the document to 100% */
@@ -48,34 +48,35 @@ html {
 }
 
 #Status {
-    background-color: gray;
+    background-color: #777;
 }
 
 #Programs {
-    background-color: gray;
+    background-color: #777;
 }
 
 #Calibration {
-    background-color: gray;
+    background-color: #777;
 }
 
 #ManualControl {
-    background-color: gray;
+    background-color: #777;
 }
 
 #Settings {
-    background-color: gray;
+    background-color: #777;
 }
 
 h1 {
-    color: #0F3376;
+    color: white;
     padding: 2vh;
+	background-color: #555;
 }
 
 h3 {
     color: white;
     font-size: 1.5rem;
-    padding: 2vh;
+	background-color: #555;
 }
 
 p {
@@ -102,10 +103,10 @@ th, td {
     text-align: center;
     outline: none;
     color: #fff;
-    background-color: #2f4468;
+    background-color: #777;
     border: none;
     border-radius: 5px;
-    box-shadow: 0 6px #999;
+    box-shadow: 0 6px #555;
     cursor: pointer;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -117,11 +118,11 @@ th, td {
 }
 
 .button:hover {
-    background-color: gray;
+    background-color: #777;
 }
 
 .button:active {
-    background-color: black;
-    box-shadow: 0 0px #666;
+    background-color: #555;
+    box-shadow: 0 0px #555;
     transform: translateY(2px);
 }
