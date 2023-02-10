@@ -76,11 +76,12 @@ h1 {
 h3 {
     color: white;
     font-size: 1.5rem;
-	background-color: #555;
+	background-color: #777;
 }
 
 p {
     font-size: 1.5rem;
+	background-color: #777;
 }
 
 table{

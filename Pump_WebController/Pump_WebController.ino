@@ -10,7 +10,7 @@
 //NOTES: IF YOU WANT TO PRINT DEBUG STRINGS UN-COMMENT NEXT LINE)
 #define DEBUG //Enable debug print
 
-//NOTES: IF YOU WANT TO UNLOCK POURTH PUMP (GPIO15 DOESN'T WORK PROPERLY NOW) UNCOMMENT NEXT CODE LINE
+//NOTES: IF YOU WANT TO UNLOCK FOURTH PUMP (GPIO15 DOESN'T WORK PROPERLY NOW) UNCOMMENT NEXT CODE LINE
 //#define P4_DEF //Enable debug print
 
 // Import required libraries
@@ -500,28 +500,31 @@ void setup() {
   });
 
   // Receive an HTTP GET request
-  server.on("/cal1on1", HTTP_GET, [] (AsyncWebServerRequest * request)
+  server.on("/cal1on", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
     pump1.programEnable = false;
     digitalWrite(pump1.motor_GPIO, HIGH);
     startMillis = millis();
+    #ifdef DEBUG
+      Serial.println("ON");
+    #endif
     request->send(SPIFFS, "/index.html", String(), false);
   });
-  server.on("/cal1on2", HTTP_GET, [] (AsyncWebServerRequest * request)
+  server.on("/cal2on", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
     pump2.programEnable = false;
     digitalWrite(pump2.motor_GPIO, HIGH);
     startMillis = millis();
     request->send(SPIFFS, "/index.html", String(), false);
   });
-  server.on("/cal1on3", HTTP_GET, [] (AsyncWebServerRequest * request)
+  server.on("/cal3on", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
     pump3.programEnable = false;
     digitalWrite(pump3.motor_GPIO, HIGH);
     startMillis = millis();
     request->send(SPIFFS, "/index.html", String(), false);
   });
-  server.on("/cal1on4", HTTP_GET, [] (AsyncWebServerRequest * request)
+  server.on("/cal4on", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
     pump4.programEnable = false;
     digitalWrite(pump4.motor_GPIO, HIGH);
@@ -529,7 +532,7 @@ void setup() {
     request->send(SPIFFS, "/index.html", String(), false);
   });
 
-  server.on("/cal1off1", HTTP_GET, [] (AsyncWebServerRequest * request)
+  server.on("/cal1off", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
     pump1.programEnable = true;
     digitalWrite(pump1.motor_GPIO, LOW);
@@ -538,7 +541,7 @@ void setup() {
     Serial.println(pump1.CAL_pumpmS);
     request->send(SPIFFS, "/index.html", String(), false);
   });
-  server.on("/cal1off2", HTTP_GET, [] (AsyncWebServerRequest * request)
+  server.on("/cal2off", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
     pump2.programEnable = true;
     digitalWrite(pump2.motor_GPIO, LOW);
@@ -547,7 +550,7 @@ void setup() {
     Serial.println(pump2.CAL_pumpmS);
     request->send(SPIFFS, "/index.html", String(), false);
   });
-  server.on("/cal1off3", HTTP_GET, [] (AsyncWebServerRequest * request)
+  server.on("/cal3off", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
     pump3.programEnable = true;
     digitalWrite(pump3.motor_GPIO, LOW);
@@ -556,7 +559,7 @@ void setup() {
     Serial.println(pump3.CAL_pumpmS);
     request->send(SPIFFS, "/index.html", String(), false);
   });
-  server.on("/cal1off4", HTTP_GET, [] (AsyncWebServerRequest * request)
+  server.on("/cal4off", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
     pump4.programEnable = true;
     digitalWrite(pump4.motor_GPIO, LOW);

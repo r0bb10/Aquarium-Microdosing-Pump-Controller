@@ -102,7 +102,7 @@
 			<form action="/getProgram" target="hiddenFrame">  
 				<td>02</td>
 				<td>%pump2ProgStatus%<select name="pump2ProgStatus"><option id="No" value="0">NO</option><option id="Yes" value="1">YES</option></select></td>
-				<td>%pump1DateTime%<input type="datetime-local" name="pump2DateTime" multiple></td>
+				<td>%pump2DateTime%<input type="datetime-local" name="pump2DateTime" multiple></td>
 				<td>%pump2DispensingAmount%<input type="number " name="pump2DispensingAmount" multiple></td>
 				<td>%pump2day%<input type="number " name="pump2day" multiple></td>
 				<td>%pump2ContainerVolume% <input type="number " name="pump2ContainerVolume" multiple></td>
@@ -169,13 +169,13 @@
 							RUN
 						</th>
 						<th>
-							SAVE
-						</th>
-						<th>
 							CALIBRATION VOLUME in mL
 						</th>
 						<th>
 							CALIBRATION TIME in S
+						</th>
+						<th>
+							SAVE
 						</th>
 					</tr>
 					<tr>
@@ -183,13 +183,13 @@
 							<button class="button" onmousedown="toggleCheckbox('cal1on');" ontouchstart="toggleCheckbox('cal1on');" onmouseup="toggleCheckbox('cal1off');" ontouchend="toggleCheckbox('cal1off');">RUN PUMP 1</button>
 						</th>
 						<th>
-							<button class="button" onmouseup="toggleCheckbox('save1');" ontouchend="toggleCheckbox('save1');">SAVE PUMP 1 CALIBRATION</button>
-						</th>
-						<th>
-							%pump1calibrationVolume%
+							<input type="number " name="pump1calibrationVolume" required value="pump1calibrationVolume">
 						</th>
 						<th>
 							%pump1runtime%
+						</th>
+						<th>
+							<button class="button" onmouseup="toggleCheckbox('save1');" ontouchend="toggleCheckbox('save1');">SAVE PUMP 1 CALIBRATION</button>
 						</th>
 					</tr>
 					<tr>
@@ -197,21 +197,18 @@
 							<button class="button" onmousedown="toggleCheckbox('cal2on');" ontouchstart="toggleCheckbox('cal2on');" onmouseup="toggleCheckbox('cal2off');" ontouchend="toggleCheckbox('cal2off');">RUN PUMP 2</button>
 						</th>
 						<th>
-							<button class="button" onmouseup="toggleCheckbox('save2');" ontouchend="toggleCheckbox('save2');">SAVE PUMP 2 CALIBRATION</button>
-						</th>
-						<th>
 							%pump2calibrationVolume%
 						</th>
 						<th>
 							%pump2runtime%
 						</th>
+						<th>
+							<button class="button" onmouseup="toggleCheckbox('save2');" ontouchend="toggleCheckbox('save2');">SAVE PUMP 2 CALIBRATION</button>
+						</th>						
 					</tr>
 					<tr>
 						<th>
 							<button class="button" onmousedown="toggleCheckbox('cal3on');" ontouchstart="toggleCheckbox('cal3on');" onmouseup="toggleCheckbox('cal3off');" ontouchend="toggleCheckbox('cal3off');">RUN PUMP 3</button>
-						</th>
-						<th>
-							<button class="button" onmouseup="toggleCheckbox('save3');" ontouchend="toggleCheckbox('save3');">SAVE PUMP 3 CALIBRATION</button>
 						</th>
 						<th>
 							%pump3calibrationVolume%
@@ -219,19 +216,22 @@
 						<th>
 							%pump3runtime%
 						</th>
+						<th>
+							<button class="button" onmouseup="toggleCheckbox('save3');" ontouchend="toggleCheckbox('save3');">SAVE PUMP 3 CALIBRATION</button>
+						</th>						
 					</tr>
 					<tr>
 						<th>
 							<button class="button" onmousedown="toggleCheckbox('cal4on');" ontouchstart="toggleCheckbox('cal4on');" onmouseup="toggleCheckbox('cal4off');" ontouchend="toggleCheckbox('cal4off');">RUN PUMP 4</button>
 						</th>
 						<th>
-							<button class="button" onmouseup="toggleCheckbox('save4');" ontouchend="toggleCheckbox('save4');">SAVE PUMP 4 CALIBRATION</button>
-						</th>
-						<th>
 							%pump4calibrationVolume%
 						</th>
 						<th>
 							%pump4runtime%
+						</th>
+						<th>
+							<button class="button" onmouseup="toggleCheckbox('save4');" ontouchend="toggleCheckbox('save4');">SAVE PUMP 4 CALIBRATION</button>
 						</th>
 					</tr>
 				</table>
