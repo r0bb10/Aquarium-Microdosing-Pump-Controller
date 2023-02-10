@@ -132,7 +132,7 @@ const char* PARAM_PUMP4CALVOLUME = "pump1calibrationVolume";
 
 const int MAX_STRUCT_SIZE = 44; //TODO: check it by strlen
 char buffer[MAX_STRUCT_SIZE];
-
+char strBuf[MAX_STRUCT_SIZE];
 boolean commitSucc=false;
 boolean rtcWorking=false;
 
@@ -173,7 +173,7 @@ void initRTC()
     Serial.println("Couldn't find RTC, proceed with internal clock");
     Serial.flush();
     rtcWorking = false;
-//    abort();
+    timeClient.begin();
   }
   else
   {
@@ -231,15 +231,7 @@ String processor(const String& var)
     else
     {
       DateTime dt (pump1.nextRuntime+settings.timezoneOffset+(3600*settings.DST));
-      char strBuf[50];
-      if (dt.isPM())
-      {
-       sprintf(strBuf, "%02i/%02i/%i, %02i:%02i:%02i PM", dt.month(), dt.day(), dt.year(), dt.twelveHour(), dt.minute(), dt.second() );
-      }
-      else
-      {
-       sprintf(strBuf, "%02i/%02i/%i, %02i:%02i:%02i AM", dt.month(), dt.day(), dt.year(), dt.twelveHour(), dt.minute(), dt.second() );
-      }
+      sprintf(strBuf, "%i-%02i-%02i, %02i:%02i:%02i DST:%i", dt.year(), dt.month(), dt.day(), dt.hour(), dt.minute(), dt.second(), settings.DST );
       return String(strBuf);
     }    
   }
@@ -274,15 +266,7 @@ String processor(const String& var)
     else
     {
       DateTime dt (pump2.nextRuntime+settings.timezoneOffset+(3600*settings.DST));
-      char strBuf[50];
-      if (dt.isPM())
-      {
-       sprintf(strBuf, "%02i/%02i/%i, %02i:%02i:%02i PM", dt.month(), dt.day(), dt.year(), dt.twelveHour(), dt.minute(), dt.second() );
-      }
-      else
-      {
-       sprintf(strBuf, "%02i/%02i/%i, %02i:%02i:%02i AM", dt.month(), dt.day(), dt.year(), dt.twelveHour(), dt.minute(), dt.second() );
-      }
+      sprintf(strBuf, "%i-%02i-%02i, %02i:%02i:%02i DST:%i", dt.year(), dt.month(), dt.day(), dt.hour(), dt.minute(), dt.second(), settings.DST );
       return String(strBuf);
     }    
   }
@@ -317,15 +301,7 @@ String processor(const String& var)
     else
     {
       DateTime dt (pump3.nextRuntime+settings.timezoneOffset+(3600*settings.DST));
-      char strBuf[50];
-      if (dt.isPM())
-      {
-       sprintf(strBuf, "%02i/%02i/%i, %02i:%02i:%02i PM", dt.month(), dt.day(), dt.year(), dt.twelveHour(), dt.minute(), dt.second() );
-      }
-      else
-      {
-       sprintf(strBuf, "%02i/%02i/%i, %02i:%02i:%02i AM", dt.month(), dt.day(), dt.year(), dt.twelveHour(), dt.minute(), dt.second() );
-      }
+      sprintf(strBuf, "%i-%02i-%02i, %02i:%02i:%02i DST:%i", dt.year(), dt.month(), dt.day(), dt.hour(), dt.minute(), dt.second(), settings.DST );
       return String(strBuf);
     }    
   }
@@ -360,15 +336,7 @@ String processor(const String& var)
     else
     {
       DateTime dt (pump4.nextRuntime+settings.timezoneOffset+(3600*settings.DST));
-      char strBuf[50];
-      if (dt.isPM())
-      {
-       sprintf(strBuf, "%02i/%02i/%i, %02i:%02i:%02i PM", dt.month(), dt.day(), dt.year(), dt.twelveHour(), dt.minute(), dt.second() );
-      }
-      else
-      {
-       sprintf(strBuf, "%02i/%02i/%i, %02i:%02i:%02i AM", dt.month(), dt.day(), dt.year(), dt.twelveHour(), dt.minute(), dt.second() );
-      }
+      sprintf(strBuf, "%i-%02i-%02i, %02i:%02i:%02i DST:%i", dt.year(), dt.month(), dt.day(), dt.hour(), dt.minute(), dt.second(), settings.DST );
       return String(strBuf);
     }    
   }
@@ -477,7 +445,6 @@ void setup() {
    return;
   }  
   
-  timeClient.begin();
   DateTime now_Time;
   if(rtcWorking == true)
   {
@@ -485,11 +452,12 @@ void setup() {
   }
   else
   {
-     //TODO: rtc fail implementantion
+    now_Time = timeClient.update();
+    Serial.println(timeClient.getFormattedTime());
   }
   epochTime_Truth = now_Time.unixtime();
   
- // Serial.println(epochTime_Truth);
+  Serial.println(epochTime_Truth);
   
   epochTime_Estimate = epochTime_Truth;
 
@@ -811,21 +779,21 @@ void setup() {
         if (t == -1)
         {
           /* Handle error */;
-          printf("%ld\n", (long) t);
-          printf("%ld\n", epochTime_Estimate);
-          pump1.nextRuntime = (long) t;
-          #ifdef EXT_MEMORY
-            fram.write(P1MEMADD, pump1);
-          #else
-            EEPROM.put(P1MEMADD, pump1);
-            commitSucc = EEPROM.commit();
-          #endif        
-          #ifdef DEBUG
-            itoa(pump1.nextRuntime, buffer, 10);
-            Serial.println("P1 next time run ");
-            Serial.println(buffer);
-          #endif
         }
+        printf("%ld\n", (long) t);
+        printf("%ld\n", epochTime_Estimate);
+        pump1.nextRuntime = (long) t;
+        #ifdef EXT_MEMORY
+          fram.write(P1MEMADD, pump1);
+        #else
+          EEPROM.put(P1MEMADD, pump1);
+          commitSucc = EEPROM.commit();
+        #endif        
+        #ifdef DEBUG
+          itoa(pump1.nextRuntime, buffer, 10);
+          Serial.println("P1 next time run ");
+          Serial.println(buffer);
+        #endif
       }
     }
     if (request->hasParam(PARAM_PUMP1AMOUNT)) {
@@ -970,21 +938,21 @@ void setup() {
         if (t == -1)
         {
           /* Handle error */;
-          printf("%ld\n", (long) t);
-          printf("%ld\n", epochTime_Estimate);
-          pump2.nextRuntime = (long) t;
-          #ifdef EXT_MEMORY
-            fram.write(P2MEMADD, pump2);
-          #else
-            EEPROM.put(P2MEMADD, pump2);
-            commitSucc = EEPROM.commit();
-          #endif        
-          #ifdef DEBUG
-            itoa(pump2.nextRuntime, buffer, 10);
-            Serial.println("P2 next time run ");
-            Serial.println(buffer);
-          #endif
         }
+        printf("%ld\n", (long) t);
+        printf("%ld\n", epochTime_Estimate);
+        pump2.nextRuntime = (long) t;
+        #ifdef EXT_MEMORY
+          fram.write(P2MEMADD, pump2);
+        #else
+          EEPROM.put(P2MEMADD, pump2);
+          commitSucc = EEPROM.commit();
+        #endif        
+        #ifdef DEBUG
+          itoa(pump2.nextRuntime, buffer, 10);
+          Serial.println("P2 next time run ");
+          Serial.println(buffer);
+        #endif
       }
     }
     if (request->hasParam(PARAM_PUMP2AMOUNT)) {
@@ -1129,21 +1097,21 @@ void setup() {
         if (t == -1)
         {
           /* Handle error */;
-          printf("%ld\n", (long) t);
-          printf("%ld\n", epochTime_Estimate);
-          pump3.nextRuntime = (long) t;
-          #ifdef EXT_MEMORY
-            fram.write(P3MEMADD, pump3);
-          #else
-            EEPROM.put(P3MEMADD, pump3);
-            commitSucc = EEPROM.commit();
-          #endif        
-          #ifdef DEBUG
-            itoa(pump3.nextRuntime, buffer, 10);
-            Serial.println("P3 next time run ");
-            Serial.println(buffer);
-          #endif
         }
+        printf("%ld\n", (long) t);
+        printf("%ld\n", epochTime_Estimate);
+        pump3.nextRuntime = (long) t;
+        #ifdef EXT_MEMORY
+          fram.write(P3MEMADD, pump3);
+        #else
+          EEPROM.put(P3MEMADD, pump3);
+          commitSucc = EEPROM.commit();
+        #endif        
+        #ifdef DEBUG
+          itoa(pump3.nextRuntime, buffer, 10);
+          Serial.println("P3 next time run ");
+          Serial.println(buffer);
+        #endif
       }
     }
     if (request->hasParam(PARAM_PUMP3AMOUNT)) {
@@ -1288,21 +1256,21 @@ void setup() {
         if (t == -1)
         {
           /* Handle error */;
-          printf("%ld\n", (long) t);
-          printf("%ld\n", epochTime_Estimate);
-          pump4.nextRuntime = (long) t;
-          #ifdef EXT_MEMORY
-            fram.write(P4MEMADD, pump4);
-          #else
-            EEPROM.put(P4MEMADD, pump4);
-            commitSucc = EEPROM.commit();
-          #endif        
-          #ifdef DEBUG
-            itoa(pump4.nextRuntime, buffer, 10);
-            Serial.println("P4 next time run ");
-            Serial.println(buffer);
-          #endif
         }
+        printf("%ld\n", (long) t);
+        printf("%ld\n", epochTime_Estimate);
+        pump4.nextRuntime = (long) t;
+        #ifdef EXT_MEMORY
+          fram.write(P4MEMADD, pump4);
+        #else
+          EEPROM.put(P4MEMADD, pump4);
+          commitSucc = EEPROM.commit();
+        #endif        
+        #ifdef DEBUG
+          itoa(pump4.nextRuntime, buffer, 10);
+          Serial.println("P4 next time run ");
+          Serial.println(buffer);
+        #endif
       }
     }
     if (request->hasParam(PARAM_PUMP4AMOUNT)) {
@@ -1495,18 +1463,31 @@ void loop() {
     DateTime now_Time;
     if(rtcWorking == true)
     {
-      DateTime now_Time = rtc.now(); 
+      now_Time = rtc.now(); 
     }
     else
     {
-       //TODO: rtc fail implementantion
+      now_Time =timeClient.update();
+      Serial.println(timeClient.getFormattedTime());
     }
     epochTime_Estimate = now_Time.unixtime();     
   }
   if (rtc_sync_ticks > settings.rtc_time_sync_check)
   {
     rtc_sync_ticks = 0;
-    unsigned long time_truth = getTime();
+    unsigned long time_truth;
+    if(rtcWorking == true)
+    {
+       time_truth = getTime();
+    }
+    else
+    {
+       time_truth = timeClient.update();
+       Serial.println(timeClient.getFormattedTime());
+    }
+
+
+    
     if (time_truth > epochTime_Estimate-1000)
     {
       epochTime_Estimate = time_truth;      
@@ -1516,7 +1497,8 @@ void loop() {
       }
       else
       {
-         //TODO: rtc fail implementantion
+         time_truth = timeClient.update();
+         Serial.println(timeClient.getFormattedTime());
       }
     }   
   }
@@ -1547,7 +1529,7 @@ void checkPump(pumpStruct pump, int address)
     #endif
     #ifdef DEBUG
       memcpy(buffer, &pump, sizeof(buffer));
-      Serial.println("Pump page ");
+      Serial.println("Chars check");
       Serial.println(buffer);
     #endif
     delay(round((pump.volumePump_mL * pump.CAL_pumpmS) / pump.calibrationVolumeL));
@@ -1574,9 +1556,9 @@ pumpStruct loadPump(const int address, int motor)
   
   #ifdef DEBUG
     itoa(address/100, buffer, 10);
-    Serial.println("Pump number");
-    Serial.println(buffer);
-    Serial.println(pump.valid_read);
+    Serial.println("************************");
+    sprintf(strBuf, "Pump number %s", buffer);
+    Serial.println(strBuf);
   #endif    
 
   if((pump.valid_read[0] == '$')&&(pump.valid_read[1] == '$')&&(pump.valid_read[2] == '$'))
@@ -1584,41 +1566,41 @@ pumpStruct loadPump(const int address, int motor)
     #ifdef DEBUG
       Serial.println("Values read correctly");
       
-      Serial.println("Calibration in mS");
       itoa(pump.CAL_pumpmS, buffer, 10);
-      Serial.println(buffer);
+      sprintf(strBuf, "Calibration in mS %s", buffer);
+      Serial.println(strBuf);
 
-      Serial.println("Last time ran");
       itoa(pump.previousRuntime, buffer, 10);
-      Serial.println(buffer);
+      sprintf(strBuf, "Last time ran %s", buffer);
+      Serial.println(strBuf);
 
-      Serial.println("Next time run");
       itoa(pump.nextRuntime, buffer, 10);
-      Serial.println(buffer);
+      sprintf(strBuf, "Next time run %s", buffer);
+      Serial.println(strBuf);
 
-      Serial.println("Delay in days");
       itoa(pump.dayDelay, buffer, 10);
-      Serial.println(buffer);
+      sprintf(strBuf, "Delay in days %s", buffer);
+      Serial.println(strBuf);
 
-      Serial.println("Pump volume");
       itoa(pump.volumePump_mL, buffer, 10);
-      Serial.println(buffer);
+      sprintf(strBuf, "Pump volume %s", buffer);
+      Serial.println(strBuf);
 
-      Serial.println("Total volume pumped");
       itoa(pump.totalvolumePumped_mL, buffer, 10);
-      Serial.println(buffer);
-
-      Serial.println("Container volume");
+      sprintf(strBuf, "Total volume pumped %s", buffer);
+      Serial.println(strBuf);
+      
       itoa(pump.containerVolume, buffer, 10);
-      Serial.println(buffer);
-
-      Serial.println("Motor GPIO");
+      sprintf(strBuf, "Container volume %s", buffer);
+      Serial.println(strBuf);
+      
       itoa(pump.motor_GPIO, buffer, 10);
-      Serial.println(buffer);
+      sprintf(strBuf, "Motor GPIO %s", buffer);
+      Serial.println(strBuf);
     
-      Serial.println("Program enabled");
       itoa(pump.programEnable, buffer, 10);
-      Serial.println(buffer);
+      sprintf(strBuf, "Program enabled %s", buffer);
+      Serial.println(strBuf);
     #endif
   }
   else
