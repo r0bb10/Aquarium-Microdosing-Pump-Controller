@@ -2,16 +2,121 @@
     { enableId: 'Enabled', enableName: 'ENABLED' },
     { enableId: 'Disabled', enableName: 'DISABLED' }
 ];
+
+   var myTimerP1;
+   var myTimerP2;
+   var myTimerP3;
+   var myTimerP4;
    
+   var timerP1 = 0;
+   var timerP2 = 0;
+   var timerP3 = 0;
+   var timerP4 = 0;
    
+	function clock(e) {
+		if (e=="cal1on")
+		{
+			myTimerP1 = setInterval(myClockP1, 100);
+			document.getElementById("cal1off").style.display = "block";
+		}
+		else if (e=="cal2on")
+		{
+			myTimerP2 = setInterval(myClockP2, 100);
+			document.getElementById("cal2off").style.display = "block";
+		}
+		else if (e=="cal3on")
+		{
+			myTimerP3 = setInterval(myClockP3, 100);
+			document.getElementById("cal3off").style.display = "block";
+		}
+		else if (e=="cal4on")
+		{
+			myTimerP4 = setInterval(myClockP4, 100);
+			document.getElementById("cal4off").style.display = "block";
+		}
+	}
+
+	function myClockP1() {
+			++timerP1;
+			document.getElementById('captp1').textContent = timerP1/10;
+	}
    
+	function myClockP2() {
+			++timerP2;
+			document.getElementById('captp2').textContent = timerP2/10;
+	}
+	
+	function myClockP3() {
+			++timerP3;
+			document.getElementById('captp3').textContent = timerP3/10;
+	}
+	
+	function myClockP4() {
+			++timerP4;
+			document.getElementById('captp4').textContent = timerP4/10;
+	}
+
    function toggleCheckbox(x) {
        var xhr = new XMLHttpRequest();
        xhr.open("GET", "/" + x, true);
        xhr.send();
+	   if(x=="cal1on")
+	   {
+		   clock("cal1on");
+		   document.getElementById("cal1on").style.display = "none";
+		   document.getElementById("save1").style.display = "block";
+	   }
+	   else if(x=="cal1off")
+	   {
+		   clearInterval(myTimerP1);
+		   document.getElementById("cal1off").style.display = "none";
+		   document.getElementById("cal1on").style.display = "block";
+	   }
+	   else if(x=="cal2on")
+	   {
+		   clock("cal2on");
+		   document.getElementById("cal2on").style.display = "none";
+		   document.getElementById("save2").style.display = "block";
+	   }
+	   else if(x=="cal2off")
+	   {
+		   clearInterval(myTimerP2);
+		   document.getElementById("cal2off").style.display = "none";
+		   document.getElementById("cal2on").style.display = "block";
+	   }
+	   else if(x=="cal3on")
+	   {
+		   clock("cal3on");
+		   document.getElementById("cal3on").style.display = "none";
+		   document.getElementById("save3").style.display = "block";
+	   }
+	   else if(x=="cal3off")
+	   {
+		   clearInterval(myTimerP3);
+		   document.getElementById("cal3off").style.display = "none";
+		   document.getElementById("cal3on").style.display = "block";
+	   }
+	   else if(x=="cal4on")
+	   {
+		   clock("cal4on");
+		   document.getElementById("cal4on").style.display = "none";
+		   document.getElementById("save4").style.display = "block";
+	   }
+	   else if(x=="cal4off")
+	   {
+		   clearInterval(myTimerP4);
+		   document.getElementById("cal4off").style.display = "none";
+		   document.getElementById("cal4on").style.display = "block";
+	   }
+	   else if(x=="cal4off")
+	   {
+		   clearInterval(myTimerP4);
+		   document.getElementById("cal4off").style.display = "none";
+		   document.getElementById("cal4on").style.display = "block";
+	   }
    };
 
-   setInterval(function() {
+/*   setInterval(function() {
        var xhttp = new XMLHttpRequest();
        xhttp.onreadystatechange = function() {
            if (this.readyState == 4 && this.status == 200) {
@@ -54,7 +159,7 @@
        xhttp.open("GET", "/pump4runtime", true);
        xhttp.send();
    }, 100);
-
+*/
    function openPage(pageName) {
        var i, tabcontent, tablinks;
        tabcontent = document.getElementsByClassName("tabcontent");
@@ -66,7 +171,6 @@
            tablinks[i].style.backgroundColor = "";
        }
        document.getElementById(pageName).style.display = "block";
-       elmnt.style.backgroundColor = color;
    };
 
    if (!!window.EventSource) {

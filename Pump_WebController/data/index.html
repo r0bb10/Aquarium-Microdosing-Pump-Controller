@@ -180,58 +180,62 @@
 					</tr>
 					<tr>
 						<th>
-							<button class="button" onmousedown="toggleCheckbox('cal1on');" ontouchstart="toggleCheckbox('cal1on');" onmouseup="toggleCheckbox('cal1off');" ontouchend="toggleCheckbox('cal1off');">RUN PUMP 1</button>
+							<button id="cal1on" class="button" onclick="toggleCheckbox('cal1on');">RUN PUMP 1</button>
+							<button id="cal1off" style="display: none;" class="button" onclick="toggleCheckbox('cal1off');">STOP PUMP 1</button>
 						</th>
 						<th>
-							<input type="number " name="pump1calibrationVolume" required value="pump1calibrationVolume">
+							<input type="number " name="pump1calibrationVolume">%pump1calibrationVolume%</input>
 						</th>
 						<th>
-							%pump1runtime%
+							<p id="captp1">Timer</p>
 						</th>
 						<th>
-							<button class="button" onmouseup="toggleCheckbox('save1');" ontouchend="toggleCheckbox('save1');">SAVE PUMP 1 CALIBRATION</button>
+							<button id="save1" class="button" style="display: none;" onmouseup="toggleCheckbox('save1');" ontouchend="toggleCheckbox('save1');">SAVE PUMP 1 CALIBRATION</button>
 						</th>
 					</tr>
 					<tr>
 						<th>
-							<button class="button" onmousedown="toggleCheckbox('cal2on');" ontouchstart="toggleCheckbox('cal2on');" onmouseup="toggleCheckbox('cal2off');" ontouchend="toggleCheckbox('cal2off');">RUN PUMP 2</button>
+							<button id="cal2on" class="button" onclick="toggleCheckbox('cal2on');">RUN PUMP 2</button>
+							<button id="cal2off" style="display: none;" class="button" onclick="toggleCheckbox('cal2off');">STOP PUMP 2</button>
 						</th>
 						<th>
 							%pump2calibrationVolume%
 						</th>
 						<th>
-							%pump2runtime%
+							<p id="captp2">Timer</p>
 						</th>
 						<th>
-							<button class="button" onmouseup="toggleCheckbox('save2');" ontouchend="toggleCheckbox('save2');">SAVE PUMP 2 CALIBRATION</button>
+							<button id="save2" class="button" style="display: none;"  onmouseup="toggleCheckbox('save2');" ontouchend="toggleCheckbox('save2');">SAVE PUMP 2 CALIBRATION</button>
 						</th>						
 					</tr>
 					<tr>
 						<th>
-							<button class="button" onmousedown="toggleCheckbox('cal3on');" ontouchstart="toggleCheckbox('cal3on');" onmouseup="toggleCheckbox('cal3off');" ontouchend="toggleCheckbox('cal3off');">RUN PUMP 3</button>
+							<button id="cal3on" class="button" onclick="toggleCheckbox('cal3on');">RUN PUMP 3</button>
+							<button id="cal3off" style="display: none;" class="button" onclick="toggleCheckbox('cal3off');">STOP PUMP 3</button>
 						</th>
 						<th>
 							%pump3calibrationVolume%
 						</th>
 						<th>
-							%pump3runtime%
+							<p id="captp3">Timer</p>
 						</th>
 						<th>
-							<button class="button" onmouseup="toggleCheckbox('save3');" ontouchend="toggleCheckbox('save3');">SAVE PUMP 3 CALIBRATION</button>
+							<button id="save3" class="button" style="display: none;"  onmouseup="toggleCheckbox('save3');" ontouchend="toggleCheckbox('save3');">SAVE PUMP 3 CALIBRATION</button>
 						</th>						
 					</tr>
 					<tr>
 						<th>
-							<button class="button" onmousedown="toggleCheckbox('cal4on');" ontouchstart="toggleCheckbox('cal4on');" onmouseup="toggleCheckbox('cal4off');" ontouchend="toggleCheckbox('cal4off');">RUN PUMP 4</button>
+							<button id="cal4on" class="button" onclick="toggleCheckbox('cal4on');">RUN PUMP 4</button>
+							<button id="cal4off" style="display: none;" class="button" onclick="toggleCheckbox('cal4off');">STOP PUMP 4</button>
 						</th>
 						<th>
 							%pump4calibrationVolume%
 						</th>
 						<th>
-							%pump4runtime%
+							<p id="captp4">Timer</p>
 						</th>
 						<th>
-							<button class="button" onmouseup="toggleCheckbox('save4');" ontouchend="toggleCheckbox('save4');">SAVE PUMP 4 CALIBRATION</button>
+							<button id="save4" class="button" style="display: none;"  onmouseup="toggleCheckbox('save4');" ontouchend="toggleCheckbox('save4');">SAVE PUMP 4 CALIBRATION</button>
 						</th>
 					</tr>
 				</table>
