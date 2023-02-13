@@ -95,9 +95,8 @@ volatile unsigned int ticks = 0;
 volatile unsigned int sync_ticks = 21600;
 volatile unsigned int rtc_sync_ticks = 21600;
 
-unsigned long startMillis = 0;        // will store last time LED was updated
+unsigned long startMillis = 0;
 unsigned long stopMillis = 0;
-
 
 const char* PARAM_DST = "DST";
 const char* PARAM_TIMEZONEOFFSET = "timezoneOffset";
@@ -568,17 +567,35 @@ void setup() {
     Serial.println(pump4.CAL_pumpmS);
     request->send(SPIFFS, "/index.html", String(), false);
   });
-
+//****************************************************************************
+//READ PARAMETERS FROM WEB PAGE***********************************************
+//****************************************************************************  
   server.on("/save1", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
-    #ifdef EXT_MEMORY    
-      fram.write(P1MEMADD, pump1);
-    #else
-      EEPROM.put(P1MEMADD, pump1);
-      commitSucc = EEPROM.commit();
-      Serial.println((commitSucc) ? "Pump 01 parameters saved as requested" : "Commit Pump 01 parameters failed");
-    #endif   
-    request->send(SPIFFS, "/index.html", String(), false);
+      String temp = request->getParam(PARAM_PUMP4ENABLE)->value();
+
+      if (temp.length() == 0)
+      {
+        Serial.println("Empty String");
+      }
+      else
+      {
+        pump4.programEnable = temp.toInt();
+        #ifdef EXT_MEMORY
+          fram.write(P4MEMADD, pump4);
+        #else
+          EEPROM.put(P4MEMADD, pump4);
+          commitSucc = EEPROM.commit();
+        #endif
+        #ifdef DEBUG
+          itoa(pump4.programEnable, buffer, 10);
+          Serial.println("P4 enable ");
+          Serial.println(buffer);
+        #endif
+      }
+    }
+
+    request->send(SPIFFS, "/index.html", String(), false, processor);
   });
   server.on("/save2", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
@@ -685,20 +702,6 @@ void setup() {
   server.on("/getSetting", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
     String temp;
-    // GET inputString value on <ESP_IP>/get?inputString=<inputMessage>
-    if (request->hasParam(PARAM_PUMP1CONTAINERVOLUME)) 
-    {
-      temp = request->getParam(PARAM_PUMP1CONTAINERVOLUME)->value();
-      if (temp.length() == 0)
-      {      
-        Serial.println("Empty String");
-      }        
-      else
-      {
-        pump1.containerVolume = temp.toFloat();
-      }
-      //TODO: Add management for other 3 pumps
-    }
     
     // GET inputInt value on <ESP_IP>/get?inputInt=<inputMessage>
     if (request->hasParam(PARAM_TIMEZONEOFFSET))
