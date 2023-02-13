@@ -57,9 +57,6 @@
 	}
 
    function toggleCheckbox(x) {
-       var xhr = new XMLHttpRequest();
-       xhr.open("GET", "/" + x, true);
-       xhr.send();
 	   if(x=="cal1on")
 	   {
 		   clock("cal1on");
@@ -108,58 +105,15 @@
 		   document.getElementById("cal4off").style.display = "none";
 		   document.getElementById("cal4on").style.display = "block";
 	   }
-	   else if(x=="cal4off")
+	   else if(x=="save1")
 	   {
-		   clearInterval(myTimerP4);
-		   document.getElementById("cal4off").style.display = "none";
-		   document.getElementById("cal4on").style.display = "block";
+		   var xhr = new XMLHttpRequest();
+		   xhr.open("GET", "/" + x, true);
+       		   xhr.send();
 	   }
+	   else 
    };
 
-/*   setInterval(function() {
-       var xhttp = new XMLHttpRequest();
-       xhttp.onreadystatechange = function() {
-           if (this.readyState == 4 && this.status == 200) {
-               document.getElementById("pump1runtime").innerHTML = this.responseText;
-           }
-       };
-       xhttp.open("GET", "/pump1runtime", true);
-       xhttp.send();
-   }, 100);
-   
-   setInterval(function() {
-       var xhttp = new XMLHttpRequest();
-       xhttp.onreadystatechange = function() {
-           if (this.readyState == 4 && this.status == 200) {
-               document.getElementById("pump2runtime").innerHTML = this.responseText;
-           }
-       };
-       xhttp.open("GET", "/pump2runtime", true);
-       xhttp.send();
-   }, 100);
-   
-   setInterval(function() {
-       var xhttp = new XMLHttpRequest();
-       xhttp.onreadystatechange = function() {
-           if (this.readyState == 4 && this.status == 200) {
-               document.getElementById("pump3runtime").innerHTML = this.responseText;
-           }
-       };
-       xhttp.open("GET", "/pump3runtime", true);
-       xhttp.send();
-   }, 100);
-   
-   setInterval(function() {
-       var xhttp = new XMLHttpRequest();
-       xhttp.onreadystatechange = function() {
-           if (this.readyState == 4 && this.status == 200) {
-               document.getElementById("pump4runtime").innerHTML = this.responseText;
-           }
-       };
-       xhttp.open("GET", "/pump4runtime", true);
-       xhttp.send();
-   }, 100);
-*/
    function openPage(pageName) {
        var i, tabcontent, tablinks;
        tabcontent = document.getElementsByClassName("tabcontent");
