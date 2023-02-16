@@ -572,7 +572,7 @@ void setup() {
 //****************************************************************************  
   server.on("/save1", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
-      String temp = request->getParam(PARAM_PUMP4ENABLE)->value();
+      String temp = request->getParam(PARAM_PUMP1CALVOLUME)->value();
 
       if (temp.length() == 0)
       {
@@ -580,16 +580,16 @@ void setup() {
       }
       else
       {
-        pump4.programEnable = temp.toInt();
+        pump1.calibrationVolumeL = temp.toInt();
         #ifdef EXT_MEMORY
-          fram.write(P4MEMADD, pump4);
+          fram.write(P1MEMADD, pump1);
         #else
-          EEPROM.put(P4MEMADD, pump4);
+          EEPROM.put(P1MEMADD, pump1);
           commitSucc = EEPROM.commit();
         #endif
         #ifdef DEBUG
-          itoa(pump4.programEnable, buffer, 10);
-          Serial.println("P4 enable ");
+          itoa(pump1.calibrationVolumeL, buffer, 10);
+          Serial.println("P1 calibration volume ml:");
           Serial.println(buffer);
         #endif
       }
