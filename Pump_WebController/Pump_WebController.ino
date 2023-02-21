@@ -190,7 +190,9 @@ void initRTC()
   }
 }
 
-// Replaces placeholder with stored values
+//-------------------------------------
+//Return values to webpage-------------
+//-------------------------------------
 String processor(const String& var)
 {
   if (var == PARAM_PUMP1CALVOLUME)
@@ -481,6 +483,10 @@ void setup() {
     EEPROM.get(SETMEMADD,tempSettings);
   #endif
 
+//****************************************************************************
+//READ PARAMETERS FROM WEB PAGE***********************************************
+//****************************************************************************  
+
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest * request)
   {
@@ -567,36 +573,37 @@ void setup() {
     Serial.println(pump4.CAL_pumpmS);
     request->send(SPIFFS, "/index.html", String(), false);
   });
-//****************************************************************************
-//READ PARAMETERS FROM WEB PAGE***********************************************
-//****************************************************************************  
+
   server.on("/save1", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
-      String temp = request->getParam(PARAM_PUMP4ENABLE)->value();
-
+      String temp = request->getParam(PARAM_PUMP1CALVOLUME)->value();
       if (temp.length() == 0)
       {
         Serial.println("Empty String");
       }
       else
       {
-        pump4.programEnable = temp.toInt();
-        #ifdef EXT_MEMORY
-          fram.write(P4MEMADD, pump4);
-        #else
-          EEPROM.put(P4MEMADD, pump4);
-          commitSucc = EEPROM.commit();
-        #endif
+//        pump4.programEnable = temp.toInt();
+//        #ifdef EXT_MEMORY
+//          fram.write(P4MEMADD, pump4);
+//        #else
+//          EEPROM.put(P4MEMADD, pump4);
+//          commitSucc = EEPROM.commit();
+//        #endif
+//        #ifdef DEBUG
+//          itoa(pump4.programEnable, buffer, 10);
+//          Serial.println("P4 enable ");
+//          Serial.println(buffer);
+//        #endif
         #ifdef DEBUG
-          itoa(pump4.programEnable, buffer, 10);
-          Serial.println("P4 enable ");
+          pump1.calibrationVolumeL = temp.toInt();
+          itoa(pump1.calibrationVolumeL, buffer, 10);
           Serial.println(buffer);
         #endif
       }
-    }
-
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
+  
   server.on("/save2", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
     #ifdef EXT_MEMORY    
@@ -824,7 +831,7 @@ void setup() {
         #endif
       }
     }
-    if (request->hasParam(PARAM_PUMP1CALVOLUME)) {
+/*    if (request->hasParam(PARAM_PUMP1CALVOLUME)) {
       String temp = request->getParam(PARAM_PUMP1CALVOLUME)->value();
       if (temp.length() == 0)
       {
@@ -845,7 +852,7 @@ void setup() {
           Serial.println(buffer);
         #endif
       }
-    }
+    }*/
     if (request->hasParam(PARAM_PUMP1CONTAINERVOLUME)) {
       String temp = request->getParam(PARAM_PUMP1CONTAINERVOLUME)->value();
       if (temp.length() == 0)

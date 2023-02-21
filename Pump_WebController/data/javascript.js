@@ -109,9 +109,8 @@
 	   {
 		   var xhr = new XMLHttpRequest();
 		   xhr.open("GET", "/" + x, true);
-       		   xhr.send();
-	   }
-	   else 
+       	   xhr.send();
+	   } 
    };
 
    function openPage(pageName) {

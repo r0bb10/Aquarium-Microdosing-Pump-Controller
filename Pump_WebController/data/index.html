@@ -183,15 +183,17 @@
 							<button id="cal1on" class="button" onclick="toggleCheckbox('cal1on');">RUN PUMP 1</button>
 							<button id="cal1off" style="display: none;" class="button" onclick="toggleCheckbox('cal1off');">STOP PUMP 1</button>
 						</th>
+						<form action="/save1">
 						<th>
-							<input type="number " name="pump1calibrationVolume">%pump1calibrationVolume%</input>
+							<input type="number" name="pump1calibrationVolume">%pump1calibrationVolume%</input>
 						</th>
 						<th>
 							<p id="captp1">Timer</p>
 						</th>
 						<th>
-							<button id="save1" class="button" style="display: none;" onmouseup="toggleCheckbox('save1');" ontouchend="toggleCheckbox('save1');">SAVE PUMP 1 CALIBRATION</button>
+							<input type="submit" value="SAVE PUMP 1 CALIBRATION" id="save1" class="button" style="display: none;" onclick="toggleCheckbox('save1');"/>
 						</th>
+						</form>
 					</tr>
 					<tr>
 						<th>
@@ -205,7 +207,7 @@
 							<p id="captp2">Timer</p>
 						</th>
 						<th>
-							<button id="save2" class="button" style="display: none;"  onmouseup="toggleCheckbox('save2');" ontouchend="toggleCheckbox('save2');">SAVE PUMP 2 CALIBRATION</button>
+							<button id="save2" class="button" style="display: none;"  onclick="toggleCheckbox('save2');">SAVE PUMP 2 CALIBRATION</button>
 						</th>						
 					</tr>
 					<tr>
@@ -220,7 +222,7 @@
 							<p id="captp3">Timer</p>
 						</th>
 						<th>
-							<button id="save3" class="button" style="display: none;"  onmouseup="toggleCheckbox('save3');" ontouchend="toggleCheckbox('save3');">SAVE PUMP 3 CALIBRATION</button>
+							<button id="save3" class="button" style="display: none;"  onclick="toggleCheckbox('save3');">SAVE PUMP 3 CALIBRATION</button>
 						</th>						
 					</tr>
 					<tr>
@@ -235,7 +237,7 @@
 							<p id="captp4">Timer</p>
 						</th>
 						<th>
-							<button id="save4" class="button" style="display: none;"  onmouseup="toggleCheckbox('save4');" ontouchend="toggleCheckbox('save4');">SAVE PUMP 4 CALIBRATION</button>
+							<button id="save4" class="button" style="display: none;"  onclick="toggleCheckbox('save4');">SAVE PUMP 4 CALIBRATION</button>
 						</th>
 					</tr>
 				</table>
