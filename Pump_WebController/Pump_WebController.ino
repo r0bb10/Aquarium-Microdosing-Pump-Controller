@@ -577,6 +577,9 @@ void setup() {
   server.on("/save1", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
       String temp = request->getParam(PARAM_PUMP1CALVOLUME)->value();
+      #ifdef DEBUG
+        Serial.println(temp);
+      #endif
       if (temp.length() == 0)
       {
         Serial.println("Empty String");
@@ -595,8 +598,8 @@ void setup() {
 //          Serial.println("P4 enable ");
 //          Serial.println(buffer);
 //        #endif
-        #ifdef DEBUG
           pump1.calibrationVolumeL = temp.toInt();
+        #ifdef DEBUG
           itoa(pump1.calibrationVolumeL, buffer, 10);
           Serial.println(buffer);
         #endif
@@ -1611,9 +1614,14 @@ pumpStruct loadPump(const int address, int motor)
       sprintf(strBuf, "Motor GPIO %s", buffer);
       Serial.println(strBuf);
     
+      itoa(pump.calibrationVolumeL, buffer, 10);
+      sprintf(strBuf, "Calibration volume %s", buffer);
+      Serial.println(strBuf);
+
       itoa(pump.programEnable, buffer, 10);
       sprintf(strBuf, "Program enabled %s", buffer);
       Serial.println(strBuf);
+      
     #endif
   }
   else
@@ -1631,6 +1639,7 @@ pumpStruct loadPump(const int address, int motor)
     pump.containerVolume=0;       //amount of in pump reservoir.                                 2bytes
     pump.motor_GPIO = motor;      //                                                             2bytes
     pump.programEnable = false;   //                                                             1byte
+    pump.calibrationVolumeL = 20.0;//                                                            2bytes
     strcpy(pump.valid_read, "$$$");
     
     EEPROM.put(address, pump);
