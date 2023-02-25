@@ -88,7 +88,7 @@
 			<th>SUBMIT</th>
 		  </tr>
 		  <tr>
-			<form action="/getProgram" target="hiddenFrame">  
+			<form action="/getProgram">  
 				<td>01</td>
 				<td>%pump1ProgStatus%<select name="pump1ProgStatus"><option id="No" value="0">NO</option><option id="Yes" value="1">YES</option></select></td>
 				<td>%pump1DateTime%<input type="datetime-local" name="pump1DateTime" multiple></td>
@@ -99,7 +99,7 @@
 			</form>	
 		  </tr>
 		  <tr>
-			<form action="/getProgram" target="hiddenFrame">  
+			<form action="/getProgram">  
 				<td>02</td>
 				<td>%pump2ProgStatus%<select name="pump2ProgStatus"><option id="No" value="0">NO</option><option id="Yes" value="1">YES</option></select></td>
 				<td>%pump2DateTime%<input type="datetime-local" name="pump2DateTime" multiple></td>
@@ -110,7 +110,7 @@
 			</form>	
 		  </tr>
 		  <tr>
-			<form action="/getProgram" target="hiddenFrame">  
+			<form action="/getProgram">  
 				<td>03</td>
 				<td>%pump3ProgStatus%<select name="pump3ProgStatus"><option id="No" value="0">NO</option><option id="Yes" value="1">YES</option></select></td>
 				<td>%pump3DateTime%<input type="datetime-local" name="pump3DateTime" multiple></td>
@@ -121,7 +121,7 @@
 			</form>	
 		  </tr>
 		  <tr>
-			<form action="/getProgram" target="hiddenFrame">  
+			<form action="/getProgram">  
 				<td>04</td>
 				<td>%pump4ProgStatus%<select name="pump4ProgStatus"><option id="No" value="0">NO</option><option id="Yes" value="1">YES</option></select></td>
 				<td>%pump4DateTime%<input type="datetime-local" name="pump4DateTime" multiple></td>
@@ -184,15 +184,15 @@
 							<button id="cal1off" style="display: none;" class="button" onclick="toggleCheckbox('cal1off');">STOP PUMP 1</button>
 						</th>
 						<form action="/save1">
-						<th>
-							<input type="number" name="pump1calibrationVolume">%pump1calibrationVolume%</input>
-						</th>
-						<th>
-							<p id="captp1">Timer</p>
-						</th>
-						<th>
-							<input type="submit" value="SAVE PUMP 1 CALIBRATION" id="save1" class="button" style="display: none;" onclick="toggleCheckbox('save1');"/>
-						</th>
+							<th>
+								<input type="number" name="pump1calibrationVolume">%pump1calibrationVolume%</input>
+							</th>
+							<th>
+								<p id="captp1">Timer</p>
+							</th>
+							<th>
+								<input type="submit" value="SAVE PUMP 1 CALIBRATION" id="save1" class="button" style="display: none;" onclick="submitCalibP01()"/>
+							</th>
 						</form>
 					</tr>
 					<tr>
@@ -200,51 +200,57 @@
 							<button id="cal2on" class="button" onclick="toggleCheckbox('cal2on');">RUN PUMP 2</button>
 							<button id="cal2off" style="display: none;" class="button" onclick="toggleCheckbox('cal2off');">STOP PUMP 2</button>
 						</th>
-						<th>
-							%pump2calibrationVolume%
-						</th>
-						<th>
-							<p id="captp2">Timer</p>
-						</th>
-						<th>
-							<button id="save2" class="button" style="display: none;"  onclick="toggleCheckbox('save2');">SAVE PUMP 2 CALIBRATION</button>
-						</th>						
+						<form action="/save2">
+							<th>
+								<input type="number" name="pump2calibrationVolume">%pump2calibrationVolume%</input>
+							</th>
+							<th>
+								<p id="captp2">Timer</p>
+							</th>
+							<th>
+								<input type="submit" value="SAVE PUMP 2 CALIBRATION" id="save2" class="button" style="display: none;" onclick="submitCalibP02()"/>
+							</th>
+						</form>
 					</tr>
 					<tr>
 						<th>
 							<button id="cal3on" class="button" onclick="toggleCheckbox('cal3on');">RUN PUMP 3</button>
 							<button id="cal3off" style="display: none;" class="button" onclick="toggleCheckbox('cal3off');">STOP PUMP 3</button>
 						</th>
-						<th>
-							%pump3calibrationVolume%
-						</th>
-						<th>
-							<p id="captp3">Timer</p>
-						</th>
-						<th>
-							<button id="save3" class="button" style="display: none;"  onclick="toggleCheckbox('save3');">SAVE PUMP 3 CALIBRATION</button>
-						</th>						
+						<form action="/save3">
+							<th>
+								<input type="number" name="pump3calibrationVolume">%pump3calibrationVolume%</input>
+							</th>
+							<th>
+								<p id="captp3">Timer</p>
+							</th>
+							<th>
+								<input type="submit" value="SAVE PUMP 3 CALIBRATION" id="save3" class="button" style="display: none;" onclick="submitCalibP03()"/>
+							</th>
+						</form>
 					</tr>
 					<tr>
 						<th>
 							<button id="cal4on" class="button" onclick="toggleCheckbox('cal4on');">RUN PUMP 4</button>
 							<button id="cal4off" style="display: none;" class="button" onclick="toggleCheckbox('cal4off');">STOP PUMP 4</button>
 						</th>
-						<th>
-							%pump4calibrationVolume%
-						</th>
-						<th>
-							<p id="captp4">Timer</p>
-						</th>
-						<th>
-							<button id="save4" class="button" style="display: none;"  onclick="toggleCheckbox('save4');">SAVE PUMP 4 CALIBRATION</button>
-						</th>
+						<form action="/save4">
+							<th>
+								<input type="number" name="pump4calibrationVolume">%pump4calibrationVolume%</input>
+							</th>
+							<th>
+								<p id="captp4">Timer</p>
+							</th>
+							<th>
+								<input type="submit" value="SAVE PUMP 4 CALIBRATION" id="save4" class="button" style="display: none;" onclick="submitCalibP04()"/>
+							</th>
+						</form>
 					</tr>
 				</table>
     </div>
     <div id="Settings" class="tabcontent">
         <h3>Settings</h3>
-        <form action="/getSetting" target="hiddenFrame">
+        <form action="/getSetting">
             Current Time Zone Offset (GMT%timezoneOffset%):
             <select name="timezoneOffset" id="timezoneOffset-offset" class="span5" multiple>
                 <option value="-12.00">(GMT -12:00) Eniwetok, Kwajalein</option>

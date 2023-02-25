@@ -113,21 +113,21 @@ const char* PARAM_PUMP2DATETIME = "pump2DateTime";
 const char* PARAM_PUMP2AMOUNT = "pump2DispensingAmount";
 const char* PARAM_PUMP2DAY = "pump2day";
 const char* PARAM_PUMP2ENABLE = "pump2ProgStatus";
-const char* PARAM_PUMP2CALVOLUME = "pump1calibrationVolume";
+const char* PARAM_PUMP2CALVOLUME = "pump2calibrationVolume";
 
 const char* PARAM_PUMP3CONTAINERVOLUME = "pump3ContainerVolume";
 const char* PARAM_PUMP3DATETIME = "pump3DateTime";
 const char* PARAM_PUMP3AMOUNT = "pump3DispensingAmount";
 const char* PARAM_PUMP3DAY = "pump3day";
 const char* PARAM_PUMP3ENABLE = "pump3ProgStatus";
-const char* PARAM_PUMP3CALVOLUME = "pump1calibrationVolume";
+const char* PARAM_PUMP3CALVOLUME = "pump3calibrationVolume";
 
 const char* PARAM_PUMP4CONTAINERVOLUME = "pump4ContainerVolume";
 const char* PARAM_PUMP4DATETIME = "pump4DateTime";
 const char* PARAM_PUMP4AMOUNT = "pump4DispensingAmount";
 const char* PARAM_PUMP4DAY = "pump4day";
 const char* PARAM_PUMP4ENABLE = "pump4ProgStatus";
-const char* PARAM_PUMP4CALVOLUME = "pump1calibrationVolume";
+const char* PARAM_PUMP4CALVOLUME = "pump4calibrationVolume";
 
 const int MAX_STRUCT_SIZE = 44; //TODO: check it by strlen
 char buffer[MAX_STRUCT_SIZE];
@@ -574,72 +574,7 @@ void setup() {
     request->send(SPIFFS, "/index.html", String(), false);
   });
 
-  server.on("/save1", HTTP_GET, [] (AsyncWebServerRequest * request)
-  {
-      String temp = request->getParam(PARAM_PUMP1CALVOLUME)->value();
-      #ifdef DEBUG
-        Serial.println(temp);
-      #endif
-      if (temp.length() == 0)
-      {
-        Serial.println("Empty String");
-      }
-      else
-      {
-//        pump4.programEnable = temp.toInt();
-//        #ifdef EXT_MEMORY
-//          fram.write(P4MEMADD, pump4);
-//        #else
-//          EEPROM.put(P4MEMADD, pump4);
-//          commitSucc = EEPROM.commit();
-//        #endif
-//        #ifdef DEBUG
-//          itoa(pump4.programEnable, buffer, 10);
-//          Serial.println("P4 enable ");
-//          Serial.println(buffer);
-//        #endif
-          pump1.calibrationVolumeL = temp.toInt();
-        #ifdef DEBUG
-          itoa(pump1.calibrationVolumeL, buffer, 10);
-          Serial.println(buffer);
-        #endif
-      }
-    request->send(SPIFFS, "/index.html", String(), false, processor);
-  });
-  
-  server.on("/save2", HTTP_GET, [] (AsyncWebServerRequest * request)
-  {
-    #ifdef EXT_MEMORY    
-      fram.write(P2MEMADD, pump2);
-    #else
-      EEPROM.put(P2MEMADD, pump2);
-      commitSucc = EEPROM.commit();
-      Serial.println((commitSucc) ? "Pump 02 parameters saved as requested" : "Commit Pump 02 parameters failed");
-    #endif   
-    request->send(SPIFFS, "/index.html", String(), false);
-  });
-  server.on("/save3", HTTP_GET, [] (AsyncWebServerRequest * request)
-  {
-    #ifdef EXT_MEMORY    
-      fram.write(P3MEMADD, pump3);
-    #else
-      EEPROM.put(P3MEMADD, pump3);
-      commitSucc = EEPROM.commit();
-      Serial.println((commitSucc) ? "Pump 03 parameters saved as requested" : "Commit Pump 03 parameters failed");
-    #endif   
-    request->send(SPIFFS, "/index.html", String(), false);
-  });
-  server.on("/save4", HTTP_GET, [] (AsyncWebServerRequest * request)
-  {
-    #ifdef EXT_MEMORY    
-      fram.write(P4MEMADD, pump4);
-    #else
-      EEPROM.put(P4MEMADD, pump4);
-      commitSucc = EEPROM.commit();
-      Serial.println((commitSucc) ? "Pump 04 parameters saved as requested" : "Commit Pump 04 parameters failed");
-    #endif   
-    request->send(SPIFFS, "/index.html", String(), false);
-  });
+
 
   server.on("/pump1runtime", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
@@ -709,6 +644,122 @@ void setup() {
     request->send(SPIFFS, "/index.html", String(), false);
   });
 
+  server.on("/save1", HTTP_GET, [] (AsyncWebServerRequest * request)
+  {
+    String temp;
+     if (request->hasParam(PARAM_PUMP1CALVOLUME))
+     {
+        temp = request->getParam(PARAM_PUMP1CALVOLUME)->value();
+        if (temp.length() == 0)
+        {
+          Serial.println("Empty String");
+        }
+        else
+        {
+          pump1.calibrationVolumeL = temp.toInt();
+          #ifdef EXT_MEMORY
+            fram.write(P1MEMADD, pump1);
+          #else
+            EEPROM.put(P1MEMADD, pump1);
+            commitSucc = EEPROM.commit();
+          #endif
+          #ifdef DEBUG
+            itoa(pump1.calibrationVolumeL, buffer, 10);
+            Serial.println("Pump 1 calibration volume:");
+            Serial.println(buffer);
+          #endif
+        }
+      request->send(SPIFFS, "/index.html", String(), false, processor);
+     }
+  });
+
+  server.on("/save2", HTTP_GET, [] (AsyncWebServerRequest * request)
+  {
+    String temp;
+     if (request->hasParam(PARAM_PUMP2CALVOLUME))
+     {
+        temp = request->getParam(PARAM_PUMP2CALVOLUME)->value();
+        if (temp.length() == 0)
+        {
+          Serial.println("Empty String");
+        }
+        else
+        {
+          pump2.calibrationVolumeL = temp.toInt();
+          #ifdef EXT_MEMORY
+            fram.write(P2MEMADD, pump2);
+          #else
+            EEPROM.put(P2MEMADD, pump2);
+            commitSucc = EEPROM.commit();
+          #endif
+          #ifdef DEBUG
+            itoa(pump2.calibrationVolumeL, buffer, 10);
+            Serial.println("Pump 2 calibration volume:");
+            Serial.println(buffer);
+          #endif
+        }
+      request->send(SPIFFS, "/index.html", String(), false, processor);
+     }
+  });
+
+  server.on("/save3", HTTP_GET, [] (AsyncWebServerRequest * request)
+  {
+    String temp;
+     if (request->hasParam(PARAM_PUMP3CALVOLUME))
+     {
+        temp = request->getParam(PARAM_PUMP3CALVOLUME)->value();
+        if (temp.length() == 0)
+        {
+          Serial.println("Empty String");
+        }
+        else
+        {
+          pump3.calibrationVolumeL = temp.toInt();
+          #ifdef EXT_MEMORY
+            fram.write(P3MEMADD, pump3);
+          #else
+            EEPROM.put(P3MEMADD, pump3);
+            commitSucc = EEPROM.commit();
+          #endif
+          #ifdef DEBUG
+            itoa(pump3.calibrationVolumeL, buffer, 10);
+            Serial.println("Pump 3 calibration volume:");
+            Serial.println(buffer);
+          #endif
+        }
+      request->send(SPIFFS, "/index.html", String(), false, processor);
+     }
+  });
+
+  server.on("/save4", HTTP_GET, [] (AsyncWebServerRequest * request)
+  {
+    String temp;
+     if (request->hasParam(PARAM_PUMP4CALVOLUME))
+     {
+        temp = request->getParam(PARAM_PUMP4CALVOLUME)->value();
+        if (temp.length() == 0)
+        {
+          Serial.println("Empty String");
+        }
+        else
+        {
+          pump4.calibrationVolumeL = temp.toInt();
+          #ifdef EXT_MEMORY
+            fram.write(P4MEMADD, pump4);
+          #else
+            EEPROM.put(P4MEMADD, pump4);
+            commitSucc = EEPROM.commit();
+          #endif
+          #ifdef DEBUG
+            itoa(pump4.calibrationVolumeL, buffer, 10);
+            Serial.println("Pump 4 calibration volume:");
+            Serial.println(buffer);
+          #endif
+        }
+      request->send(SPIFFS, "/index.html", String(), false, processor);
+     }
+  });      
+  
   server.on("/getSetting", HTTP_GET, [] (AsyncWebServerRequest * request)
   {
     String temp;
@@ -738,9 +789,6 @@ void setup() {
       {
         settings.DST = temp.toInt();
       }
-    }
-    else
-    {
     }
     
     #ifdef EXT_MEMORY    

@@ -1,7 +1,7 @@
    var enable = [
-    { enableId: 'Enabled', enableName: 'ENABLED' },
-    { enableId: 'Disabled', enableName: 'DISABLED' }
-];
+		{ enableId: 'Enabled', enableName: 'ENABLED' },
+		{ enableId: 'Disabled', enableName: 'DISABLED' }
+	];
 
    var myTimerP1;
    var myTimerP2;
@@ -62,6 +62,9 @@
 		   clock("cal1on");
 		   document.getElementById("cal1on").style.display = "none";
 		   document.getElementById("save1").style.display = "block";
+		   document.getElementById("cal2on").style.display = "none";
+		   document.getElementById("cal3on").style.display = "none";
+		   document.getElementById("cal4on").style.display = "none";
 	   }
 	   else if(x=="cal1off")
 	   {
@@ -74,6 +77,9 @@
 		   clock("cal2on");
 		   document.getElementById("cal2on").style.display = "none";
 		   document.getElementById("save2").style.display = "block";
+		   document.getElementById("cal1on").style.display = "none";
+		   document.getElementById("cal3on").style.display = "none";
+		   document.getElementById("cal4on").style.display = "none";
 	   }
 	   else if(x=="cal2off")
 	   {
@@ -86,6 +92,9 @@
 		   clock("cal3on");
 		   document.getElementById("cal3on").style.display = "none";
 		   document.getElementById("save3").style.display = "block";
+		   document.getElementById("cal2on").style.display = "none";
+		   document.getElementById("cal1on").style.display = "none";
+		   document.getElementById("cal4on").style.display = "none";
 	   }
 	   else if(x=="cal3off")
 	   {
@@ -98,6 +107,9 @@
 		   clock("cal4on");
 		   document.getElementById("cal4on").style.display = "none";
 		   document.getElementById("save4").style.display = "block";
+		   document.getElementById("cal2on").style.display = "none";
+		   document.getElementById("cal3on").style.display = "none";
+		   document.getElementById("cal1on").style.display = "none";
 	   }
 	   else if(x=="cal4off")
 	   {
@@ -105,12 +117,6 @@
 		   document.getElementById("cal4off").style.display = "none";
 		   document.getElementById("cal4on").style.display = "block";
 	   }
-	   else if(x=="save1")
-	   {
-		   var xhr = new XMLHttpRequest();
-		   xhr.open("GET", "/" + x, true);
-       	   xhr.send();
-	   } 
    };
 
    function openPage(pageName) {
@@ -201,5 +207,25 @@
 
    function submitProgramMessageP04() {
        alert("Pump 4 program saved");
+       window.location.reload();
+   };
+   
+   function submitCalibP01() {
+       alert("Pump 1 calibration saved");
+       window.location.reload();
+   };
+   
+    function submitCalibP02() {
+       alert("Pump 2 calibration saved");
+       window.location.reload();
+   };
+   
+    function submitCalibP03() {
+       alert("Pump 3 calibration saved");
+       window.location.reload();
+   };
+   
+    function submitCalibP04() {
+       alert("Pump 4 calibration saved");
        window.location.reload();
    };
