@@ -2,7 +2,7 @@
 //BASED ON ORIGINAL CODE BY WILLIAMG42
 //ON THE FORK OF THE MASTER OF EVERYTHING R0BB10
 
-#define VERSION "0.1D"
+#define VERSION "0.1E"
 
 //NOTES: IF AN EXTERNAL MEMORY IS USED, AS THE ORIGINAL PROJECT WANTS, YOU NEED TO DEFINE EXT_MEMORY (ACTUALLY NOT WORKING, HAVE TO BE DEBUGGED, IF YOU WANT TO DO IT UNCOMMENT NEXT CODE LINE)
 //#define EXT_MEMORY     //Enable external memory
@@ -449,16 +449,31 @@ void setup() {
   DateTime now_Time;
   if(rtcWorking == true)
   {
-    DateTime now_Time = rtc.now(); 
+    #ifdef DEBUG
+      Serial.println("1 rtc Working:");
+      Serial.println(rtcWorking);
+    #endif
+    now_Time = rtc.now(); 
+    #ifdef DEBUG
+      Serial.println("2 now time:");
+      //Serial.println(rtc.now());
+    #endif
   }
   else
   {
     now_Time = timeClient.update();
-    Serial.println(timeClient.getFormattedTime());
+    #ifdef DEBUG
+      Serial.println("3 get formatted time:");
+      Serial.println(timeClient.getFormattedTime());
+    #endif
+    
   }
-  epochTime_Truth = now_Time.unixtime();
-  
-  Serial.println(epochTime_Truth);
+  //epochTime_Truth = now_Time.unixtime();
+  epochTime_Truth = timeClient.getEpochTime();
+  #ifdef DEBUG
+      Serial.println("4 epochTime");
+      Serial.println(epochTime_Truth);
+  #endif
   
   epochTime_Estimate = epochTime_Truth;
 
@@ -1534,7 +1549,8 @@ void loop() {
       now_Time =timeClient.update();
       Serial.println(timeClient.getFormattedTime());
     }
-    epochTime_Estimate = now_Time.unixtime();     
+    epochTime_Estimate = timeClient.getEpochTime();
+    //epochTime_Estimate = now_Time.unixtime();     
   }
   if (rtc_sync_ticks > settings.rtc_time_sync_check)
   {
@@ -1550,8 +1566,6 @@ void loop() {
        Serial.println(timeClient.getFormattedTime());
     }
 
-
-    
     if (time_truth > epochTime_Estimate-1000)
     {
       epochTime_Estimate = time_truth;      
@@ -1603,7 +1617,20 @@ void checkPump(pumpStruct pump, int address)
   }
   else if ((pump.nextRuntime  < epochTime_Estimate) && (pump.programEnable == true))
   {
-    pump.nextRuntime = pump.nextRuntime + (86400*pump.dayDelay);
+
+    while(pump.nextRuntime  < epochTime_Estimate)
+    {
+      Serial.println(pump.nextRuntime); Serial.println(epochTime_Estimate);
+      pump.nextRuntime = pump.nextRuntime + (86400*pump.dayDelay);
+    }
+    Serial.println("Exit from loop");
+    #ifdef EXT_MEMORY    
+      fram.write(address, pump);
+    #else
+      EEPROM.put(address, pump);
+      commitSucc = EEPROM.commit();
+    #endif
+    Serial.println("Write values");
   }
 }
 

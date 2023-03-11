@@ -146,12 +146,19 @@
 
        source.addEventListener('message', function(e) {
            console.log("message", e.data);
+		   console.log("message", e.data);
+		   console.log("message", e.data);
+		   console.log("message", e.data);
+		   console.log("message", e.data);
+		   console.log("message", e.data);
+		   console.log("message", e.data);
        }, false);
 
        source.addEventListener('currentTime', function(e) {
            milliseconds = e.data * 1000 // 1575909015000
            dateObject = new Date(milliseconds)
-           document.getElementById("currentDatetime").innerHTML = dateObject.toLocaleString("en-GB", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
+		   document.getElementById("currentDatetime").innerHTML = dateObject
+           //document.getElementById("currentDatetime").innerHTML = dateObject.toLocaleString("en-GB", { timeZoneName: "short" }) // 12/9/2019, 10:30:15 AM CST
        }, false);
 
        source.addEventListener('pump1nextDatetime', function(e) {
